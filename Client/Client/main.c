@@ -1,4 +1,4 @@
-#include "header.h"
+#include "../../Shared/sharedHeader.h"
 
 int _tmain(int argc, LPTSTR argv[]) {
 
