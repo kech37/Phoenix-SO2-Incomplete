@@ -1,8 +1,6 @@
-#include "header.h"
+#include "../../Shared/sharedHeader.h"
 
 int _tmain(int argc, LPTSTR argv[]) {
 
-	printf("Hello word!");
-
-	return 1;
+	return 0;
 }
