@@ -1,6 +1,10 @@
 #include "../../Shared/sharedHeader.h"
 
+#include <conio.h>
+
 #define NUM_THREADS 3
+
+#define TAMECRA 50
 
 int random(int min, int max) {
 	return(min + rand() % (max - min));
@@ -16,6 +20,22 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
 #endif // UNICODE
+
+
+
+/*-------------nao mechas--------------------*/
+
+	/*HANDLE hStdout;
+
+	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	cls(hStdout);*/
+
+
+	/*-------------nao mechas--------------------*/
+
+
+
 
 	DWORD * threadDefenderSpaceshipID;
 	HANDLE * hThreadDefenderSpaceship;
@@ -38,7 +58,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 		defenderSpaceship[i].resistancePoints = 1;
 		defenderSpaceship[i].cordX = random(0, 20);
 		defenderSpaceship[i].cordY = random(0, 20);
-
+		
 		hThreadDefenderSpaceship[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)checkDefenderSpaceshop, (LPVOID)&defenderSpaceship[i], 0, &threadDefenderSpaceshipID);
 		if (hThreadDefenderSpaceship[i] != NULL) {
 			//_tprintf(TEXT("Lançei uma thread com id %d.\n"), (int) threadDefenderSpaceshipID);
@@ -54,7 +74,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	free(defenderSpaceship);
 	free(hThreadDefenderSpaceship);
 	free(threadDefenderSpaceshipID);
-	_gettch();
+	//_gettch();
 	_tprintf(TEXT("Vou terminar...\n"));
 
 	return 0;
@@ -67,14 +87,21 @@ DWORD WINAPI checkDefenderSpaceshop(LPVOID param) {
 	//_tprintf(TEXT("[Thread %d] >> Vou Começar a trabalhar!\n"), GetCurrentThreadId());
 
 	for (int i = 0; i < 30; i++) {
+		
 		hSem = CreateSemaphore(NULL, 1, 1, TEXT("teste"));
 		WaitForSingleObject(hSem, INFINITE);
 		goToXY(tempSpaceship->cordX, tempSpaceship->cordY);
+		Sleep(1000);
 		tempSpaceship->cordX++;
-		Sleep(100);
 		_tprintf(TEXT("%d"), tempSpaceship->id);
 		ReleaseSemaphore(hSem, 1, NULL);
 		CloseHandle(hSem);
+
+		
+
+
+		
+	
 	}
 
 	return 0;
@@ -85,8 +112,71 @@ void goToXY(int x, int y) {
 	COORD coord;
 	coord.X = x;
 	coord.Y = y;
+	//verificaPosicao(coord);					//testar depois porque nem e aqui que se vai chamar esta funçao
 	if (!hStdout) {
 		hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	}
 	SetConsoleCursorPosition(hStdout, coord);
+	
 }
+
+BOOL verificaPosicao(COORD cordenada)
+{
+	COORD coord;
+
+	if ((cordenada.Y < 0) || (cordenada.Y >= TAMECRA) || (cordenada.X < 0) || (cordenada.X >= TAMECRA))	//verifica limites do mapa
+		return FALSE;
+	//if ()	//verificar se a posição para onde vai o macaco esta livre mas neste momento não tenho nada onde me diga a posição das outras naves 
+		return TRUE;
+	return FALSE;
+}
+
+
+
+void cls(HANDLE hConsole)
+{
+	COORD coordScreen = { 0, 0 };   
+	DWORD cCharsWritten;
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD dwConSize;
+
+
+	if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
+	{
+		return;
+	}
+
+	dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+
+	if (!FillConsoleOutputCharacter(hConsole,       
+		(TCHAR) ' ',     
+		dwConSize,      
+		coordScreen,     
+		&cCharsWritten))
+	{
+		return;
+	}
+
+
+	if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
+	{
+		return;
+	}
+
+	if (!FillConsoleOutputAttribute(hConsole,      
+		csbi.wAttributes, 
+		dwConSize,        
+		coordScreen,      
+		&cCharsWritten)) 
+	{
+		return;
+	}
+
+	SetConsoleCursorPosition(hConsole, coordScreen);
+}
+
+
+	
+
+	
+
