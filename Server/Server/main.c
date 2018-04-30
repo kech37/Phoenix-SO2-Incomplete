@@ -1,5 +1,5 @@
 #include "../../Shared/sharedHeader.h"
-
+#include "../../Phoenix_DLL/Phoenix_DLL/dll.h"
 #include <conio.h>
 
 #define NUM_THREADS 3
