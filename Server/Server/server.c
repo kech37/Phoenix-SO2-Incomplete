@@ -1,85 +1,143 @@
 #include "../../Shared/sharedHeader.h"
 
-
-
-#define NUM_THREADS 3
-
-
-int random(int min, int max) {
-	return(min + rand() % (max - min));
-}
-
-HANDLE hMutex;
-
-DWORD WINAPI controlEnemySpaceship(LPVOID param);
+int random(int min, int max);
 void goToXY(int x, int y);
-void cls(HANDLE hConsole);
+DWORD WINAPI controlaNavesInimigasBasicas(LPVOID param);
+DWORD WINAPI controlaNavesInimigasDODGE(LPVOID param);
+
+GAMEDATA gameData;
 
 int _tmain(int argc, LPTSTR argv[]) {
-	DWORD * threadDefenderSpaceshipID;
-	HANDLE * hThreadDefenderSpaceship;
-	SPACESHIP * enemySpaceship = NULL;
-	HANDLE hStdout;
+	/*
+		Handle para mutex das threads
+	*/
+	HANDLE threadsMutex;
 
-	srand((unsigned int)time(NULL));
-	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	/*
+		Variaveis para thread dos inimigos basicos
+	*/
+	DWORD threadID_naves_inimigas_basicas;
+	HANDLE handle_naves_inimigas_basicas;
+
+	/*
+		Variaveis para thread dos inimigos dodge
+	*/
+	DWORD threadID_naves_inimigas_dodge;
+	HANDLE handle_naves_inimigas_dodge;
 
 #ifdef UNICODE
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
 #endif // UNICODE
-
-	threadDefenderSpaceshipID	= (DWORD *)		malloc(sizeof(DWORD) * NUM_THREADS);
-	hThreadDefenderSpaceship	= (HANDLE *)	malloc(sizeof(HANDLE) * NUM_THREADS);
-	enemySpaceship = (SPACESHIP *)	malloc(sizeof(SPACESHIP) * NUM_THREADS);
-
-	hMutex = CreateMutex(NULL, FALSE, NULL);
-
-	for (int i = 0; i < NUM_THREADS; i++) {
-		enemySpaceship[i].id = i;
-		enemySpaceship[i].spaceshipType = SPACESHIP_ENEMY_TYPE_BASIC;
-		enemySpaceship[i].size.X = 3;
-		enemySpaceship[i].size.Y = enemySpaceship[i].size.X;
-		enemySpaceship[i].lifePoints = 1;
-		enemySpaceship[i].resistancePoints = 1;
-		enemySpaceship[i].coord.X = random(0, 50);
-		enemySpaceship[i].coord.Y = random(0, 3);
-
-		hThreadDefenderSpaceship[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlEnemySpaceship, (LPVOID)&enemySpaceship[i], 0, &threadDefenderSpaceshipID);
-
-		if (hThreadDefenderSpaceship[i] == NULL) {
-			_tprintf(TEXT("Erro ao criar Thread.\n"));
-		}
-	}
 	
-	WaitForMultipleObjects(NUM_THREADS, hThreadDefenderSpaceship, TRUE, INFINITE);
+	/*
+		init inimigos
+	*/
+	gameData.spaceshipInimigos[0].id = 0;
+	gameData.spaceshipInimigos[0].tipoSpaceship = SPACESHIP_INIMIGO_TIPO_BASICO;
+	gameData.spaceshipInimigos[0].pontosResistencia = 1;
+	gameData.spaceshipInimigos[0].pontosVida = 1;
+	gameData.spaceshipInimigos[0].tamanho.X = 3;
+	gameData.spaceshipInimigos[0].tamanho.X = gameData.spaceshipInimigos->tamanho.Y;
+	gameData.spaceshipInimigos[0].coordenadas.X = 10;
+	gameData.spaceshipInimigos[0].coordenadas.Y = 5;
 
-	CloseHandle(hMutex);
+	gameData.spaceshipInimigos[1].id = 1;
+	gameData.spaceshipInimigos[1].tipoSpaceship = SPACESHIP_INIMIGO_TIPO_DODGE;
+	gameData.spaceshipInimigos[1].pontosResistencia = 3;
+	gameData.spaceshipInimigos[1].pontosVida = 1;
+	gameData.spaceshipInimigos[1].tamanho.X = 2;
+	gameData.spaceshipInimigos[1].tamanho.X = gameData.spaceshipInimigos->tamanho.Y;
+	gameData.spaceshipInimigos[1].coordenadas.X = 5;
+	gameData.spaceshipInimigos[1].coordenadas.Y = 5;
 
-	free(enemySpaceship);
-	free(hThreadDefenderSpaceship);
-	free(threadDefenderSpaceshipID);
+	gameData.spaceshipInimigos[2].id = 0;
+	gameData.spaceshipInimigos[2].tipoSpaceship = SPACESHIP_INIMIGO_TIPO_LENTO;
+	gameData.spaceshipInimigos[2].pontosResistencia = 2;
+	gameData.spaceshipInimigos[2].pontosVida = 2;
+	gameData.spaceshipInimigos[2].tamanho.X = 5;
+	gameData.spaceshipInimigos[2].tamanho.X = gameData.spaceshipInimigos->tamanho.Y;
+	gameData.spaceshipInimigos[2].coordenadas.X = 20;
+	gameData.spaceshipInimigos[2].coordenadas.Y = 20;
 
-	_tprintf(TEXT("Vou terminar...\n"));
+	/*
+		Cria mutex
+	*/
+	threadsMutex = CreateMutex(NULL, FALSE, TEXT("mutexThreadsNavesInimigas"));     
+	if (threadsMutex == NULL) {
+		_tprintf(TEXT("CreateMutex error: %d\n"), GetLastError());
+		return 1;
+	}
 
+
+
+	/*
+		Lançamento de thread para controlar naves inimigas basicas
+	*/
+	handle_naves_inimigas_basicas = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaNavesInimigasBasicas, (LPVOID)(&gameData.spaceshipInimigos), 0, &threadID_naves_inimigas_basicas);
+	if (handle_naves_inimigas_basicas == NULL) {
+		_tprintf(TEXT("Erro: Não possivel a criação Threads das naves básicas.\n"));
+		return 1;
+	}
+
+	/*
+		Lançamento de thread para controlar naves inimigas basicas
+	*/
+	handle_naves_inimigas_dodge = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaNavesInimigasDODGE, (LPVOID)(&gameData.spaceshipInimigos), 0, &threadID_naves_inimigas_dodge);
+	if (handle_naves_inimigas_dodge == NULL) {
+		_tprintf(TEXT("Erro: Não possivel a criação Threads das naves básicas.\n"));
+		return 1;
+	}
+
+	_gettch();
+
+	CloseHandle(handle_naves_inimigas_basicas);
+	CloseHandle(handle_naves_inimigas_dodge);
+	CloseHandle(threadsMutex);
 	return 0;
 }
 
-DWORD WINAPI controlEnemySpaceship(LPVOID param) {
-	HANDLE hSem;
-	SPACESHIP *tempSpaceship = (SPACESHIP *)param;
-
-	for (int i = 0; i < 5; i++) {
-		hSem = CreateSemaphore(NULL, 1, 1, TEXT("teste"));
-		WaitForSingleObject(hSem, INFINITE);
-		goToXY(tempSpaceship->coord.X, tempSpaceship->coord.Y);
-		Sleep(1000);
-		_tprintf(TEXT("%d"), tempSpaceship->id);
-		tempSpaceship->coord.Y++;
-		ReleaseSemaphore(hSem, 1, NULL);
-		CloseHandle(hSem);
+DWORD WINAPI controlaNavesInimigasBasicas(LPVOID param) {
+	SPACESHIP *naveInimiga = ((SPACESHIP *)param);
+	HANDLE mutex;
+	while (1) {
+		for (int i = 0; i < NUM_INIMIGOS; i++) {
+			if (naveInimiga[i].tipoSpaceship == SPACESHIP_INIMIGO_TIPO_BASICO) {
+				if (random(1, 100) < 85) {
+					mutex = CreateMutex(NULL, FALSE, TEXT("mutexThreadsNavesInimigas"));
+					WaitForSingleObject(mutex, INFINITE);
+					naveInimiga[i].coordenadas.Y++;
+					goToXY(naveInimiga[i].coordenadas.X, naveInimiga[i].coordenadas.Y);
+					_tprintf(TEXT("A"));
+					ReleaseMutex(mutex);
+					CloseHandle(mutex);
+				}
+				Sleep(SPACESHIP_BASE_SPEED);
+			}
+		}
 	}
+	return 0;
+}
 
+DWORD WINAPI controlaNavesInimigasDODGE(LPVOID param) {
+	SPACESHIP *naveInimiga = ((SPACESHIP *)param);
+	HANDLE mutex;
+	while (1) {
+		for (int i = 0; i < NUM_INIMIGOS; i++) {
+			if (naveInimiga[i].tipoSpaceship == SPACESHIP_INIMIGO_TIPO_DODGE) {
+				if (random(1, 100) < 85) {
+					mutex = CreateMutex(NULL, FALSE, TEXT("mutexThreadsNavesInimigas"));
+					WaitForSingleObject(mutex, INFINITE);
+					naveInimiga[i].coordenadas.Y++;
+					goToXY(naveInimiga[i].coordenadas.X, naveInimiga[i].coordenadas.Y);
+					_tprintf(TEXT("B"));
+					ReleaseMutex(mutex);
+					CloseHandle(mutex);
+				}
+				Sleep((int) (SPACESHIP_BASE_SPEED * 0.9));
+			}
+		}
+	}
 	return 0;
 }
 
@@ -95,58 +153,7 @@ void goToXY(int x, int y) {
 
 }
 
-void cls(HANDLE hConsole)
-{
-	COORD coordScreen = { 0, 0 };    // home for the cursor 
-	DWORD cCharsWritten;
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	DWORD dwConSize;
-
-	// Get the number of character cells in the current buffer. 
-
-	if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
-	{
-		return;
-	}
-
-	dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-
-	// Fill the entire screen with blanks.
-
-	if (!FillConsoleOutputCharacter(hConsole,        // Handle to console screen buffer 
-		(TCHAR) ' ',     // Character to write to the buffer
-		dwConSize,       // Number of cells to write 
-		coordScreen,     // Coordinates of first cell 
-		&cCharsWritten))// Receive number of characters written
-	{
-		return;
-	}
-
-	// Get the current text attribute.
-
-	if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
-	{
-		return;
-	}
-
-	// Set the buffer's attributes accordingly.
-
-	if (!FillConsoleOutputAttribute(hConsole,         // Handle to console screen buffer 
-		csbi.wAttributes, // Character attributes to use
-		dwConSize,        // Number of cells to set attribute 
-		coordScreen,      // Coordinates of first cell 
-		&cCharsWritten)) // Receive number of characters written
-	{
-		return;
-	}
-
-	// Put the cursor at its home coordinates.
-
-	SetConsoleCursorPosition(hConsole, coordScreen);
+int random(int min, int max) {
+	return(min + rand() % (max - min));
 }
-
-
-
-
-
 

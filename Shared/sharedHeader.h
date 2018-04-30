@@ -6,57 +6,69 @@
 #include <io.h>
 #include <fcntl.h>
 
-typedef struct _DOT {
+#define SPACESHIP_BASE_SPEED 800
+
+#define NUM_MAX_DEFENSORES	3
+#define NUM_MAX_POWERUPS	20
+#define NUM_MAX_TIROS		50
+#define NUM_MAX_BOMBAS		50
+#define NUM_INIMIGOS		3
+
+typedef struct _COORDENADAS {
 	int X;
 	int Y;
-}DOT;
+}COORDENADAS;
 
-typedef struct _BODY {
+typedef struct _TAMANHO {
 	int X;
 	int Y;
-}BODY;
+}TAMANHO;
 
-#define	SPACESHIP_DEFENDER_TYPE		0x00;
-#define SPACESHIP_ENEMY_TYPE_BASIC	0x01;
-#define SPACESHIP_ENEMY_TYPE_DODGE	0x02;
-#define SPACESHIP_ENEMY_TYPE_SLOW	0x03;
+#define	SPACESHIP_TIPO_DEFENSOR			0
+#define SPACESHIP_INIMIGO_TIPO_BASICO	1
+#define SPACESHIP_INIMIGO_TIPO_DODGE	2
+#define SPACESHIP_INIMIGO_TIPO_LENTO	3
 
 typedef struct _SPACESHIP {
 	int id;
-	int spaceshipType;
-	int lifePoints;
-	int resistancePoints;
-	DOT coord;
-	BODY size;
+	int tipoSpaceship;
+	int pontosVida;
+	int pontosResistencia;
+	COORDENADAS coordenadas;
+	TAMANHO tamanho;
 }SPACESHIP;
 
-#define POWERUP_TYPE_SHILD		0x00;
-#define POWERUP_TYPE_ICE		0x01;
-#define POWERUP_TYPE_BATTERY	0x02;
-#define POWERUP_TYPE_PLUS		0x03;
-#define POWERUP_TYPE_LIFE		0x04;
-#define POWERUP_TYPE_ALCOOL		0x05;
-#define POWERUP_TYPE_EXTRA		0x06;
+#define POWERUP_TIPO_ESCUDO		0
+#define POWERUP_TIPO_GELO		1
+#define POWERUP_TIPO_BATERIA	2
+#define POWERUP_TIPO_MAIS		3
+#define POWERUP_TIPO_VIDA		4
+#define POWERUP_TIPO_ALCOOL		5
+#define POWERUP_TIPO_EXTRA		6
 
 typedef struct _POWERUP {
 	int id;
-	int powerupType;
+	int tipoPowerup;
 	int spawnOccurrence;
-	int durantion;
-	DOT coord;
-	BODY size;
+	int doracao;
+	COORDENADAS coordenadas;
+	TAMANHO size;
 }POWERUP;
 
-#define SAB_TYPE_BOMB 0
-#define SAB_TYPE_SHOT 1
+#define SAB_TIPO_BOMBA	0
+#define SAB_TIPO_TIRO	1
 
 typedef struct _SAB {
 	int id;
-	int type;
-	DOT coord;
+	int tipo;
+	int direcao;
+	TAMANHO tamanho;
 }SAB;
 
 typedef struct _GAMEDATA {
-	SPACESHIP enemySpaceship[10];
-	POWERUP powerups[10];
+	SPACESHIP	spaceshipInimigos[NUM_INIMIGOS];
+	SPACESHIP	spaceshipDefensores[NUM_MAX_DEFENSORES];
+	POWERUP		powerups[NUM_MAX_POWERUPS];
+	SAB			tiros[NUM_MAX_TIROS];
+	SAB			bombas[NUM_MAX_BOMBAS];
 }GAMEDATA;
