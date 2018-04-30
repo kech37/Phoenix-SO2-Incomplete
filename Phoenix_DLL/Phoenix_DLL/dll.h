@@ -2,32 +2,28 @@
 
 #include <windows.h>
 #include <tchar.h>
-#include <io.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>  
-#include <stdlib.h> 
 
+
+#define TAM 256
+
+
+#ifdef DLL_EXPORTS
+#define DLL_IMP_API __declspec(dllexport)
+#else
+#define DLL_IMP_API __declspec(dllimport)
+#endif
+extern "C"
+{
+	//Variável global da DLL
+	extern DLL_IMP_API int nDLL;
+
+}
 
 //tamanho do buffer 
 #define MAX 80 
 //dimensão da mensagem
 #define SIZE 100  
 
-#ifdef dll_EXPORTS
-#define DLL_IMP_API __declspec(dllexport)
-#else
-#define DLL_IMP_API __declspec(dllimport)
-#endif
-
-extern "C"
-{
-	//Variável global da DLL
-	extern DLL_IMP_API int nDLL;
-
-
-
-}
 
 
 

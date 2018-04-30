@@ -1,19 +1,13 @@
-#include "dll.h"
-#include <windows.h>
-
-
+//usaDLL.cpp
 #include <windows.h>
 #include <tchar.h>
+#include <io.h>
+#include <fcntl.h>
+#include <stdio.h>
 
-#define TAM 100
+#include "dll.h"
 
-
-
-
-
-
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
-{
+int _tmain(int argc, TCHAR *argv[]) {
 	
-	return TRUE;
+	return 0;
 }
