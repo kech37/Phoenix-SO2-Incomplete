@@ -30,12 +30,12 @@ typedef struct _TAMANHO {
 #define SPACESHIP_INIMIGO_TIPO_LENTO	3
 
 typedef struct _SPACESHIP {
-	int id;
-	int tipoSpaceship;
-	int pontosVida;
-	int pontosResistencia;
+	int			id;
+	int			tipoSpaceship;
+	int			pontosVida;
+	int			pontosResistencia;
 	COORDENADAS coordenadas;
-	TAMANHO tamanho;
+	TAMANHO		tamanho;
 }SPACESHIP;
 
 #define POWERUP_TIPO_ESCUDO		0
@@ -47,22 +47,25 @@ typedef struct _SPACESHIP {
 #define POWERUP_TIPO_EXTRA		6
 
 typedef struct _POWERUP {
-	int id;
-	int tipoPowerup;
-	int spawnOccurrence;
-	int doracao;
+	int			id;
+	int			tipoPowerup;
+	int			spawnOccurrence;
+	int			duracao;
 	COORDENADAS coordenadas;
-	TAMANHO size;
+	TAMANHO		size;
 }POWERUP;
 
-#define SAB_TIPO_BOMBA	0
-#define SAB_TIPO_TIRO	1
+#define SAB_INVALID		   -1
+#define SAB_TIPO_BOMBA		0
+#define SAB_TIPO_TIRO		1
+#define SAB_DIRECAO_CIMA	2
+#define SAB_DIRECAO_BAIXO	3
 
 typedef struct _SAB {
-	int id;
-	int tipo;
-	int direcao;
-	TAMANHO tamanho;
+	int		id;
+	int		tipo;
+	int		direcao;
+	COORDENADAS coordenadas;
 }SAB;
 
 typedef struct _GAMEDATA {

@@ -5,6 +5,7 @@ void goToXY(int x, int y);
 DWORD WINAPI controlaNavesInimigasBasicas(LPVOID param);
 DWORD WINAPI controlaNavesInimigasDODGE(LPVOID param);
 DWORD WINAPI controlaNavesInimigasLento(LPVOID param);
+DWORD WINAPI controlaTirosLancados(LPVOID param);
 
 GAMEDATA gameData;
 
@@ -27,10 +28,16 @@ int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE handle_naves_inimigas_dodge;
 
 	/*
-		Variaveis para thread dos inimigos lento
+	Variaveis para thread dos inimigos lento
 	*/
 	DWORD threadID_naves_inimigas_lento;
 	HANDLE handle_naves_inimigas_lento;
+
+	/*
+		Variaveis para thread dos tiros
+	*/
+	DWORD threadID_controla_tiros;
+	HANDLE handle_controla_tiros;
 
 #ifdef UNICODE
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -66,6 +73,18 @@ int _tmain(int argc, LPTSTR argv[]) {
 	gameData.spaceshipInimigos[2].tamanho.X = gameData.spaceshipInimigos->tamanho.Y;
 	gameData.spaceshipInimigos[2].coordenadas.X = 15;
 	gameData.spaceshipInimigos[2].coordenadas.Y = 0;
+	
+	/*
+		Init tiros
+	*/
+	for (int i = 0; i < NUM_MAX_TIROS; i++) {
+		gameData.tiros[i].id = i;
+		gameData.tiros[i].tipo = SAB_TIPO_TIRO;
+		gameData.tiros[i].coordenadas.X = SAB_INVALID;
+		gameData.tiros[i].coordenadas.Y = SAB_INVALID;
+		gameData.tiros[i].direcao = SAB_INVALID;
+	}
+
 
 	/*
 		Cria mutex
@@ -105,11 +124,21 @@ int _tmain(int argc, LPTSTR argv[]) {
 		return 1;
 	}
 
+	/*
+		Lançamento de thread para controlar os tiros lançados
+	*/
+	handle_controla_tiros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaTirosLancados, (LPVOID)(&gameData.tiros), 0, &threadID_controla_tiros);
+	if (handle_controla_tiros == NULL) {
+		_tprintf(TEXT("Erro: Não possivel a criação Threads das naves básicas.\n"));
+		return 1;
+	}
+
 	_gettch();
 
 	CloseHandle(handle_naves_inimigas_basicas);
 	CloseHandle(handle_naves_inimigas_dodge);
 	CloseHandle(handle_naves_inimigas_lento);
+	CloseHandle(handle_controla_tiros);
 	CloseHandle(threadsMutex);
 	return 0;
 }
@@ -164,6 +193,24 @@ DWORD WINAPI controlaNavesInimigasLento(LPVOID param) {
 					imprimeNaveInimiga(&naveInimiga[i]);
 				}
 				Sleep((int)(SPACESHIP_BASE_SPEED * 0.8));
+			}
+		}
+	}
+	return 0;
+}
+
+DWORD WINAPI controlaTirosLancados(LPVOID param) {
+	SAB * tirosLancados = ((SAB *)param);
+	while (1) {
+		for (int i = 0; i < NUM_MAX_TIROS; i++) {
+			if (tirosLancados[i].direcao != SAB_INVALID) {
+				//TODO PRECISA DE MUTEX?
+				if (tirosLancados[i].direcao == SAB_DIRECAO_CIMA) {
+					tirosLancados[i].coordenadas.Y--;
+				} else if (tirosLancados[i].direcao == SAB_DIRECAO_BAIXO) {
+					tirosLancados[i].coordenadas.Y++;
+				}
+				//TODO checkar se bateu em algo
 			}
 		}
 	}
