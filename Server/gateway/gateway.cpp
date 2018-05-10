@@ -16,7 +16,8 @@ DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
 	DWORD threadId;
 
 	// vai iniciar os metodos de sincronização para o nosso jogo 
-	Sincronizacao();
+	
+	Sinronizacao();
 
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -44,7 +45,7 @@ DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
 	// e so ver o exemplo que o prof deu sobre o escritor que vais perceber isto meu 
 	hThreadEscritor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, NULL, 0, &threadId);
 	if (hThreadEscritor != NULL)
-		_tprintf(TEXT("Lanca uma thread id %d\n"), threadId);
+		_tprintf(TEXT("Lancei thread com id %d\n"), threadId);
 	else {
 		_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
 		return -1;

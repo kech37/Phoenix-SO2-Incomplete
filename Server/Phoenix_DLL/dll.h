@@ -22,13 +22,26 @@ TCHAR SemaforoRead[] = TEXT("Ler");
 TCHAR SemaforoWrite[] = TEXT("Escrever");
 
 
+#define	SPACESHIP_DEFENDER_TYPE		0x00;
+#define SPACESHIP_ENEMY_TYPE_BASIC	0x01;
+#define SPACESHIP_ENEMY_TYPE_DODGE	0x02;
+#define SPACESHIP_ENEMY_TYPE_SLOW	0x03;
+#define POWERUP_TYPE_SHILD		0x00;
+#define POWERUP_TYPE_ICE		0x01;
+#define POWERUP_TYPE_BATTERY	0x02;
+#define POWERUP_TYPE_PLUS		0x03;
+#define POWERUP_TYPE_LIFE		0x04;
+#define POWERUP_TYPE_ALCOOL		0x05;
+#define POWERUP_TYPE_EXTRA		0x06;
+
+
 #ifdef Phoenix_DLL_EXPORTS
 #define Phoenix_DLL __declspec(dllexport)
 #else
 #define Phoenix_DLL __declspec(dllimport)
 #endif
 
-#define PartilhaMensagem TEXT("Partilha cenas e isso tudo")
+#define PartilhaMensagem TEXT("Partilha cenas e isso tudo xD")
 #define BUFFERTAM sizeof(Buffer)
 
 /*-------------------------Todas as estruturas que vamos partilhar tem que ser aqui para depois mapear percebes????*/
@@ -60,10 +73,6 @@ typedef struct MsgServidor {
 
 } MsgServidor;
 
-typedef struct Pontuacao {
-	int pontos;
-	TCHAR jogador[SIZE];
-} Pontuacao;
 
 //Mensagem que vai do Cliente para o Gateway
 typedef struct MsgCliente {
@@ -74,42 +83,18 @@ typedef struct MsgCliente {
 } MsgCliente;
 
 
-typedef struct MsgPontuacao {
-	Pontuacao pontuacoes[10];
-} MsgPontuacao;
-
-typedef struct _Buffer {
+typedef struct Buffer {
 	int numeroMensagens;
 	MsgCliente buffer[MAX];
 	int in;
 	int out;
 
 } Buffer, *PBuffer;
-
 PBuffer mensager;
 
 
-extern "C" {
-
-	//Variável global da DLL
-	extern Phoenix_DLL int nDLL;
-	extern  Phoenix_DLL PBuffer mensagemBuffer;
-	Phoenix_DLL void EnviaMensagens();
-	Phoenix_DLL void Sincronizacao();
-	Phoenix_DLL void TrataMensagens();
-
-
-	//exemplo da aula 
-	//	Phoenix_DLL int UmaString(void);
-
-}
 
 /*------------------------------------------------todas as estruturas para o jogo vao estar aqui -------------------------------*/
-
-#define	SPACESHIP_DEFENDER_TYPE		0x00;
-#define SPACESHIP_ENEMY_TYPE_BASIC	0x01;
-#define SPACESHIP_ENEMY_TYPE_DODGE	0x02;
-#define SPACESHIP_ENEMY_TYPE_SLOW	0x03;
 
 typedef struct SPACESHIP {
 	int id;
@@ -118,15 +103,8 @@ typedef struct SPACESHIP {
 	int resistancePoints;
 	int cordX, cordY;
 	int sizeX, sizeY;
-}SPACESHIP;
+}SPACESHIP, *Pspaceship;
 
-#define POWERUP_TYPE_SHILD		0x00;
-#define POWERUP_TYPE_ICE		0x01;
-#define POWERUP_TYPE_BATTERY	0x02;
-#define POWERUP_TYPE_PLUS		0x03;
-#define POWERUP_TYPE_LIFE		0x04;
-#define POWERUP_TYPE_ALCOOL		0x05;
-#define POWERUP_TYPE_EXTRA		0x06;
 
 typedef struct POWERUP {
 	int id;
@@ -137,4 +115,36 @@ typedef struct POWERUP {
 	int sizeX, sizeY;
 }POWERUP;
 
+typedef struct TIROS {
+	int id;
+	int velocidade;
+	int cordx, cordy;
+	BOOL orientacao; //0-cima // 1-baixo
 
+}TIROS;
+
+
+/*------a principal estrutura para o nosso jogo--------*/
+typedef struct JOGO {
+	/*fazer depois um define tam para esta merda de arrays xD apagar estalinha antes de enviar estou todo queimado */
+	POWERUP powerUps[10];
+	TIROS   tiros[10000];
+	SPACESHIP naves[50];
+	int tamx, tamy;
+	int pontuacao;
+}JOGO, *PJOGO;
+
+extern "C" {
+
+	//Variável global da DLL
+	extern Phoenix_DLL int nDLL;
+	extern  Phoenix_DLL PBuffer mensagemBuffer;
+	extern Phoenix_DLL PJOGO jogo;
+	Phoenix_DLL void EnviaMensagens();
+	Phoenix_DLL void Sinronizacao();
+	Phoenix_DLL void TrataMensagens();
+
+	//exemplo da aula 
+	//	Phoenix_DLL int UmaString(void);
+
+}

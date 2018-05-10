@@ -1,5 +1,3 @@
-//#include "../../Shared/sharedHeader.h"
-//#include "../../Phoenix_DLL/Phoenix_DLL/dll.h"
 #include <conio.h>
 #include "../Phoenix_DLL/dll.h"
 
@@ -27,6 +25,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	DWORD * threadDefenderSpaceshipID;
 	HANDLE * hThreadDefenderSpaceship;
 	SPACESHIP * defenderSpaceship = NULL;
+	
+	
 
 	srand((unsigned int) time(NULL));
 
@@ -116,6 +116,7 @@ BOOL verificaPosicao(COORD cordenada)
 	//if ()	//verificar se a posição para onde vai o macaco esta livre mas neste momento não tenho nada onde me diga a posição das outras naves 
 		return TRUE;
 	return FALSE;
+	
 }
 	
 
