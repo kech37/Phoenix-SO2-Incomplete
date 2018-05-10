@@ -15,7 +15,9 @@ HANDLE MutexWrite;
 HANDLE hMemoriaBuffer;
 HANDLE hMemoriaJogo;
 
-TCHAR SemaforoRead[] = TEXT("Ler");TCHAR SemaforoWrite[] = TEXT("Escrever");
+TCHAR SemaforoRead[] = TEXT("Ler");
+TCHAR SemaforoWrite[] = TEXT("Escrever");
+
 
 #ifdef Phoenix_DLL_EXPORTS
 #define Phoenix_DLL __declspec(dllexport)
