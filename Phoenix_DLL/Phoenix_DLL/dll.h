@@ -1,31 +1,43 @@
 #pragma once
-
 #include <windows.h>
 #include <tchar.h>
 
-
 #define TAM 256
-
-
-#ifdef DLL_EXPORTS
-#define DLL_IMP_API __declspec(dllexport)
-#else
-#define DLL_IMP_API __declspec(dllimport)
-#endif
-extern "C"
-{
-	//Variável global da DLL
-	extern DLL_IMP_API int nDLL;
-
-}
-
 //tamanho do buffer 
 #define MAX 80 
 //dimensão da mensagem
 #define SIZE 100  
 
+HANDLE SemaforoWriteSin;
+HANDLE SemaforoReadSin;
+HANDLE MutexRead;
+HANDLE MutexWrite;
+HANDLE hMemoriaBuffer;
+HANDLE hMemoriaJogo;
 
+TCHAR SemaforoRead[] = TEXT("Ler");TCHAR SemaforoWrite[] = TEXT("Escrever");
 
+#ifdef Phoenix_DLL_EXPORTS
+#define Phoenix_DLL __declspec(dllexport)
+#else
+#define Phoenix_DLL __declspec(dllimport)
+#endif
+
+extern "C" {
+
+	//Variável global da DLL
+	extern Phoenix_DLL int nDLL;
+	extern  Phoenix_DLL PBuffer mensagemBuffer;
+
+	Phoenix_DLL void Sincroni();
+	Phoenix_DLL void TrataMensagem();
+	Phoenix_DLL void EnviaMensagem();
+
+	//exemplo da aula 
+//	Phoenix_DLL int UmaString(void);
+	
+
+}
 
 
 /*-------------------------Todas as estruturas que vamos partilhar tem que ser aqui para depois mapear percebes????*/
@@ -91,3 +103,11 @@ typedef struct MsgCliente {
 typedef struct MsgPontuacao {
 	Pontuacao pontuacoes[10];
 } MsgPontuacao;
+
+typedef struct _Buffer{
+	int numeroMensagens;
+	MsgCliente buffer[MAX];
+	int in;
+	int out;
+
+} Buffer, *PBuffer;
