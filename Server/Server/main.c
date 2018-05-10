@@ -1,6 +1,8 @@
-#include "../../Shared/sharedHeader.h"
-#include "../../Phoenix_DLL/Phoenix_DLL/dll.h"
+//#include "../../Shared/sharedHeader.h"
+//#include "../../Phoenix_DLL/Phoenix_DLL/dll.h"
 #include <conio.h>
+#include "../Phoenix_DLL/dll.h"
+
 
 #define NUM_THREADS 3
 
@@ -20,21 +22,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
 #endif // UNICODE
-
-
-
-/*-------------nao mechas--------------------*/
-
-	/*HANDLE hStdout;
-
-	hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	cls(hStdout);*/
-
-
-	/*-------------nao mechas--------------------*/
-
-
 
 
 	DWORD * threadDefenderSpaceshipID;
@@ -130,53 +117,5 @@ BOOL verificaPosicao(COORD cordenada)
 		return TRUE;
 	return FALSE;
 }
-
-
-
-void cls(HANDLE hConsole)
-{
-	COORD coordScreen = { 0, 0 };   
-	DWORD cCharsWritten;
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	DWORD dwConSize;
-
-
-	if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
-	{
-		return;
-	}
-
-	dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-
-	if (!FillConsoleOutputCharacter(hConsole,       
-		(TCHAR) ' ',     
-		dwConSize,      
-		coordScreen,     
-		&cCharsWritten))
-	{
-		return;
-	}
-
-
-	if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
-	{
-		return;
-	}
-
-	if (!FillConsoleOutputAttribute(hConsole,      
-		csbi.wAttributes, 
-		dwConSize,        
-		coordScreen,      
-		&cCharsWritten)) 
-	{
-		return;
-	}
-
-	SetConsoleCursorPosition(hConsole, coordScreen);
-}
-
-
-	
-
 	
 

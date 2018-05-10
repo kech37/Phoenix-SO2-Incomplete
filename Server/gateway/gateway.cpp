@@ -8,18 +8,14 @@
 #include "../Phoenix_DLL/dll.h"
 
 #define _CRT_SECURE_NO_WARNINGS
-
 HANDLE hThreadEscritor;
-
 DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
-int _tmain(int argc, LPTSTR argv[]) {
+int _tmain(int argc, LPTSTR argv[]) {
 
-	//	TCHAR resp;
+
 	DWORD threadId;
 
-	//	Jogo Jogo;
-
-
+	// vai iniciar os metodos de sincronização para o nosso jogo 
 	Sincronizacao();
 
 #ifdef UNICODE 
@@ -28,8 +24,8 @@ DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
 
 #endif
 
-	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, TAMANHOBUFFER, mPartilhadaMensagens); //onde está o invalid tbm posso guardar num dados.txt
-
+	// vamos iniciar para partilhar a memoria ate pode ir para um .txt 
+	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, BUFFERTAM, PartilhaMensagem);
 
 
 	if (!hMemoriaBuffer) {
@@ -45,10 +41,10 @@ DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
 	}
 
 	
-
+	// e so ver o exemplo que o prof deu sobre o escritor que vais perceber isto meu 
 	hThreadEscritor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, NULL, 0, &threadId);
 	if (hThreadEscritor != NULL)
-		_tprintf(TEXT("Lancei uma thread com id %d\n"), threadId);
+		_tprintf(TEXT("Lanca uma thread id %d\n"), threadId);
 	else {
 		_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
 		return -1;

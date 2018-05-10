@@ -1,25 +1,23 @@
 #pragma once
-#include <windows.h>
+#include <time.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <Windows.h>
 #include <tchar.h>
+#include <io.h>
+#include <fcntl.h>
 
 #define TAM 256
 //tamanho do buffer 
 #define MAX 80 
 //dimensão da mensagem
 #define SIZE 100  
-#define mPartilhadaMensagens TEXT("memPartilhadaMensagens")
-#define TAMANHOBUFFER sizeof(Buffer)
-PBuffer mensager = NULL;
-
 HANDLE SemaforoWriteSin;
 HANDLE SemaforoReadSin;
 HANDLE MutexRead;
 HANDLE MutexWrite;
 HANDLE hMemoriaBuffer;
 HANDLE hMemoriaJogo;
-
-
-
 TCHAR SemaforoRead[] = TEXT("Ler");
 TCHAR SemaforoWrite[] = TEXT("Escrever");
 
@@ -30,53 +28,22 @@ TCHAR SemaforoWrite[] = TEXT("Escrever");
 #define Phoenix_DLL __declspec(dllimport)
 #endif
 
-extern "C" {
-
-	//Variável global da DLL
-	extern Phoenix_DLL int nDLL;
-	extern  Phoenix_DLL PBuffer mensagemBuffer;
-	Phoenix_DLL void EnviaMensagens();
-	Phoenix_DLL void Sincronizacao();
-	Phoenix_DLL void TrataMensagens();
-	
-
-	//exemplo da aula 
-	//	Phoenix_DLL int UmaString(void);
-
-
-}
-
+#define PartilhaMensagem TEXT("Partilha cenas e isso tudo")
+#define BUFFERTAM sizeof(Buffer)
 
 /*-------------------------Todas as estruturas que vamos partilhar tem que ser aqui para depois mapear percebes????*/
-/*
-Mecanismo de sicronizão para o raio do bufer
-
-Gataway
-semaphore
-mutex
-
-Servidor
-
-semaphore
-mutex
-
-*/
 
 
+/*-------------------------todas as estruturas de comunicação vao estar neste sitio ----------------------------------*/
 typedef enum Teclas {
 	CIMA,
 	BAIXO,
 	ESQUERDA,
 	DIREITA,
-	ESPACO         /*disparar*/
+	ESPACO         /*para um gajo poder disparar*/
 }Teclas;
 
-/*
-Mensagens do servidor
-Ao incio para começar jogo id e nome do cliente
-notificar jogadores de actualização
-enviar no fim pontuação e já é bem bom
-*/
+
 typedef enum MensagemCliente {
 	Start,
 	EmJogo
@@ -118,3 +85,56 @@ typedef struct _Buffer {
 	int out;
 
 } Buffer, *PBuffer;
+
+PBuffer mensager;
+
+
+extern "C" {
+
+	//Variável global da DLL
+	extern Phoenix_DLL int nDLL;
+	extern  Phoenix_DLL PBuffer mensagemBuffer;
+	Phoenix_DLL void EnviaMensagens();
+	Phoenix_DLL void Sincronizacao();
+	Phoenix_DLL void TrataMensagens();
+
+
+	//exemplo da aula 
+	//	Phoenix_DLL int UmaString(void);
+
+}
+
+/*------------------------------------------------todas as estruturas para o jogo vao estar aqui -------------------------------*/
+
+#define	SPACESHIP_DEFENDER_TYPE		0x00;
+#define SPACESHIP_ENEMY_TYPE_BASIC	0x01;
+#define SPACESHIP_ENEMY_TYPE_DODGE	0x02;
+#define SPACESHIP_ENEMY_TYPE_SLOW	0x03;
+
+typedef struct SPACESHIP {
+	int id;
+	int spaceshipType;
+	int lifePoints;
+	int resistancePoints;
+	int cordX, cordY;
+	int sizeX, sizeY;
+}SPACESHIP;
+
+#define POWERUP_TYPE_SHILD		0x00;
+#define POWERUP_TYPE_ICE		0x01;
+#define POWERUP_TYPE_BATTERY	0x02;
+#define POWERUP_TYPE_PLUS		0x03;
+#define POWERUP_TYPE_LIFE		0x04;
+#define POWERUP_TYPE_ALCOOL		0x05;
+#define POWERUP_TYPE_EXTRA		0x06;
+
+typedef struct POWERUP {
+	int id;
+	int powerupType;
+	int spawnOccurrence;
+	int durantion;
+	int cordX, cordY;
+	int sizeX, sizeY;
+}POWERUP;
+
+
