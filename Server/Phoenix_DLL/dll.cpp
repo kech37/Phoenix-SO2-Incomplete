@@ -13,7 +13,7 @@ int nDLL = 1234;
 PBuffer mensager = NULL;
 
 
-void EnviaMensagem() {
+void EnviaMensagens() {
 	WaitForSingleObject(MutexRead, INFINITE);
 	WaitForSingleObject(SemaforoWriteSin, INFINITE);
 	mensager->buffer[mensager->in].id = 1;
@@ -23,7 +23,7 @@ void EnviaMensagem() {
 	ReleaseSemaphore(SemaforoReadSin, 1, NULL);
 }
 
-void Sincroni() {
+void Sincronizacao() {
 	MutexWrite = CreateMutex(NULL, FALSE, NULL);
 	MutexRead = CreateMutex(NULL, FALSE, NULL);
 	SemaforoReadSin = CreateSemaphore(NULL, 0, MAX, SemaforoWrite);
@@ -37,7 +37,7 @@ void Sincroni() {
 }
 
 
-void TrataMensagem() {
+void TrataMensagens() {
 
 	WaitForSingleObject(MutexWrite, INFINITE);
 	WaitForSingleObject(SemaforoReadSin, INFINITE);

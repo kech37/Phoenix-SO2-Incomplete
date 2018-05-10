@@ -7,6 +7,9 @@
 #define MAX 80 
 //dimensão da mensagem
 #define SIZE 100  
+#define mPartilhadaMensagens TEXT("memPartilhadaMensagens")
+#define TAMANHOBUFFER sizeof(Buffer)
+PBuffer mensager = NULL;
 
 HANDLE SemaforoWriteSin;
 HANDLE SemaforoReadSin;
@@ -14,6 +17,8 @@ HANDLE MutexRead;
 HANDLE MutexWrite;
 HANDLE hMemoriaBuffer;
 HANDLE hMemoriaJogo;
+
+
 
 TCHAR SemaforoRead[] = TEXT("Ler");
 TCHAR SemaforoWrite[] = TEXT("Escrever");
@@ -30,10 +35,10 @@ extern "C" {
 	//Variável global da DLL
 	extern Phoenix_DLL int nDLL;
 	extern  Phoenix_DLL PBuffer mensagemBuffer;
-
-	Phoenix_DLL void Sincroni();
-	Phoenix_DLL void TrataMensagem();
-	Phoenix_DLL void EnviaMensagem();
+	Phoenix_DLL void EnviaMensagens();
+	Phoenix_DLL void Sincronizacao();
+	Phoenix_DLL void TrataMensagens();
+	
 
 	//exemplo da aula 
 	//	Phoenix_DLL int UmaString(void);

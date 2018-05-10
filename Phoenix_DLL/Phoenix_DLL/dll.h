@@ -25,21 +25,24 @@ TCHAR SemaforoWrite[] = TEXT("Escrever");
 #define Phoenix_DLL __declspec(dllimport)
 #endif
 
+#ifdef __cpluplus
 extern "C" {
+#endif
 
 	//Variável global da DLL
 	extern Phoenix_DLL int nDLL;
-	extern  Phoenix_DLL PBuffer mensagemBuffer;
+	extern  Phoenix_DLL PBuffer mensager;
 
-	Phoenix_DLL void Sincroni();
+	Phoenix_DLL void Sincronizacao();
 	Phoenix_DLL void TrataMensagem();
 	Phoenix_DLL void EnviaMensagem();
 
 	//exemplo da aula 
 //	Phoenix_DLL int UmaString(void);
 	
-
+#ifdef __cplusplus
 }
+#endif
 
 
 /*-------------------------Todas as estruturas que vamos partilhar tem que ser aqui para depois mapear percebes????*/
