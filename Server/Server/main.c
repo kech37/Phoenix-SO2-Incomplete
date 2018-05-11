@@ -83,11 +83,6 @@ DWORD WINAPI checkDefenderSpaceshop(LPVOID param) {
 		_tprintf(TEXT("%d"), tempSpaceship->id);
 		ReleaseSemaphore(hSem, 1, NULL);
 		CloseHandle(hSem);
-
-		
-
-
-		
 	
 	}
 
@@ -110,13 +105,11 @@ void goToXY(int x, int y) {
 BOOL verificaPosicao(COORD cordenada)
 {
 	COORD coord;
-
 	if ((cordenada.Y < 0) || (cordenada.Y >= TAMECRA) || (cordenada.X < 0) || (cordenada.X >= TAMECRA))	//verifica limites do mapa
 		return FALSE;
 	//if ()	//verificar se a posição para onde vai o macaco esta livre mas neste momento não tenho nada onde me diga a posição das outras naves 
 		return TRUE;
 	return FALSE;
-	
 }
 	
 
