@@ -1,14 +1,11 @@
 #include "main.h"
 int random(int min, int max);
 void goToXY(int x, int y);
-DWORD WINAPI controlaNavesInimigasBasicas(LPVOID param);
-DWORD WINAPI controlaNavesInimigasDODGE(LPVOID param);
-DWORD WINAPI controlaNavesInimigasLento(LPVOID param);
+DWORD WINAPI controlaNavesInimigas(LPVOID param);
 DWORD WINAPI controlaTirosLancados(LPVOID param);
 
-GAMEDATA gameData;
-
 int _tmain(int argc, LPTSTR argv[]) {
+	PGAMEDATA gameView;
 	/*
 	Handle para mutex das threads
 	*/
@@ -17,20 +14,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	/*
 	Variaveis para thread dos inimigos basicos
 	*/
-	DWORD threadID_naves_inimigas_basicas;
-	HANDLE handle_naves_inimigas_basicas;
-
-	/*
-	Variaveis para thread dos inimigos dodge
-	*/
-	DWORD threadID_naves_inimigas_dodge;
-	HANDLE handle_naves_inimigas_dodge;
-
-	/*
-	Variaveis para thread dos inimigos lento
-	*/
-	DWORD threadID_naves_inimigas_lento;
-	HANDLE handle_naves_inimigas_lento;
+	DWORD threadID_naves_inimigas;
+	HANDLE handle_naves_inimigas;
 
 	/*
 	Variaveis para thread dos tiros
@@ -44,49 +29,66 @@ int _tmain(int argc, LPTSTR argv[]) {
 #endif // UNICODE
 
 	/*
+	Memoria partilhada
+	*/
+	hMemoriaJogo = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(GAMEDATA), MAPAJOGO);
+	if (!hMemoriaJogo) {
+		_tprintf(TEXT("[Erro] GameData"));
+		return -1;
+	}
+
+	/*
 	init inimigos
 	*/
-	gameData.spaceshipInimigos[0].id = 0;
-	gameData.spaceshipInimigos[0].tipoSpaceship = SPACESHIP_INIMIGO_TIPO_BASICO;
-	gameData.spaceshipInimigos[0].pontosResistencia = 1;
-	gameData.spaceshipInimigos[0].pontosVida = 1;
-	gameData.spaceshipInimigos[0].tamanho.X = 3;
-	gameData.spaceshipInimigos[0].tamanho.X = gameData.spaceshipInimigos->tamanho.Y;
-	gameData.spaceshipInimigos[0].coordenadas.X = 5;
-	gameData.spaceshipInimigos[0].coordenadas.Y = 0;
 
-	gameData.spaceshipInimigos[1].id = 1;
-	gameData.spaceshipInimigos[1].tipoSpaceship = SPACESHIP_INIMIGO_TIPO_DODGE;
-	gameData.spaceshipInimigos[1].pontosResistencia = 3;
-	gameData.spaceshipInimigos[1].pontosVida = 1;
-	gameData.spaceshipInimigos[1].tamanho.X = 2;
-	gameData.spaceshipInimigos[1].tamanho.X = gameData.spaceshipInimigos->tamanho.Y;
-	gameData.spaceshipInimigos[1].coordenadas.X = 10;
-	gameData.spaceshipInimigos[1].coordenadas.Y = 0;
+	gameView = (PGAMEDATA)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+	if (hMemoriaJogo == NULL) {
+		_tprintf(TEXT("[Erro] na memoria partilhada\n"));
+		return -1;
+	}
 
-	gameData.spaceshipInimigos[2].id = 2;
-	gameData.spaceshipInimigos[2].tipoSpaceship = SPACESHIP_INIMIGO_TIPO_LENTO;
-	gameData.spaceshipInimigos[2].pontosResistencia = 2;
-	gameData.spaceshipInimigos[2].pontosVida = 2;
-	gameData.spaceshipInimigos[2].tamanho.X = 5;
-	gameData.spaceshipInimigos[2].tamanho.X = gameData.spaceshipInimigos->tamanho.Y;
-	gameData.spaceshipInimigos[2].coordenadas.X = 15;
-	gameData.spaceshipInimigos[2].coordenadas.Y = 0;
+	gameView->spaceshipInimigos[0].id = 0;
+	gameView->spaceshipInimigos[0].tipoSpaceship = SPACESHIP_INIMIGO_TIPO_BASICO;
+	gameView->spaceshipInimigos[0].pontosResistencia = 1;
+	gameView->spaceshipInimigos[0].pontosVida = 1;
+	gameView->spaceshipInimigos[0].tamanho.X = 3;
+	gameView->spaceshipInimigos[0].tamanho.X = gameView->spaceshipInimigos[0].tamanho.Y;
+	gameView->spaceshipInimigos[0].coordenadas.X = 5;
+	gameView->spaceshipInimigos[0].coordenadas.Y = 0;
+
+	gameView->spaceshipInimigos[1].id = 1;
+	gameView->spaceshipInimigos[1].tipoSpaceship = SPACESHIP_INIMIGO_TIPO_DODGE;
+	gameView->spaceshipInimigos[1].pontosResistencia = 3;
+	gameView->spaceshipInimigos[1].pontosVida = 1;
+	gameView->spaceshipInimigos[1].tamanho.X = 2;
+	gameView->spaceshipInimigos[1].tamanho.X = gameView->spaceshipInimigos[1].tamanho.Y;
+	gameView->spaceshipInimigos[1].coordenadas.X = 10;
+	gameView->spaceshipInimigos[1].coordenadas.Y = 0;
+
+	gameView->spaceshipInimigos[2].id = 2;
+	gameView->spaceshipInimigos[2].tipoSpaceship = SPACESHIP_INIMIGO_TIPO_LENTO;
+	gameView->spaceshipInimigos[2].pontosResistencia = 2;
+	gameView->spaceshipInimigos[2].pontosVida = 2;
+	gameView->spaceshipInimigos[2].tamanho.X = 5;
+	gameView->spaceshipInimigos[2].tamanho.X = gameView->spaceshipInimigos[2].tamanho.Y;
+	gameView->spaceshipInimigos[2].coordenadas.X = 15;
+	gameView->spaceshipInimigos[2].coordenadas.Y = 0;
 
 	/*
 	Init tiros
 	*/
 	for (int i = 0; i < NUM_MAX_TIROS; i++) {
-		gameData.tiros[i].id = i;
-		gameData.tiros[i].tipo = SAB_TIPO_TIRO;
-		gameData.tiros[i].coordenadas.X = SAB_INVALID;
-		gameData.tiros[i].coordenadas.Y = SAB_INVALID;
-		gameData.tiros[i].direcao = SAB_INVALID;
+		gameView->tiros[i].id = i;
+		gameView->tiros[i].tipo = SAB_TIPO_TIRO;
+		gameView->tiros[i].coordenadas.X = SAB_INVALID;
+		gameView->tiros[i].coordenadas.Y = SAB_INVALID;
+		gameView->tiros[i].direcao = SAB_INVALID;
 	}
 
+	UnmapViewOfFile(gameView);
 
 	/*
-	Cria mutex
+		Cria mutex
 	*/
 	threadsMutex = CreateMutex(NULL, FALSE, TEXT("mutexThreadsNavesInimigas"));
 	if (threadsMutex == NULL) {
@@ -94,112 +96,118 @@ int _tmain(int argc, LPTSTR argv[]) {
 		return 1;
 	}
 
-
-
 	/*
-	Lançamento de thread para controlar naves inimigas basicas
+	Lançamento de thread para controlar naves inimigas
 	*/
-	handle_naves_inimigas_basicas = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaNavesInimigasBasicas, (LPVOID)(&gameData.spaceshipInimigos), 0, &threadID_naves_inimigas_basicas);
-	if (handle_naves_inimigas_basicas == NULL) {
+	handle_naves_inimigas = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaNavesInimigas, NULL, 0, &threadID_naves_inimigas);
+	if (handle_naves_inimigas == NULL) {
 		_tprintf(TEXT("Erro: Não possivel a criação Threads das naves básicas.\n"));
 		return 1;
 	}
 
-	/*
-	Lançamento de thread para controlar naves inimigas dodge
-	*/
-	handle_naves_inimigas_dodge = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaNavesInimigasDODGE, (LPVOID)(&gameData.spaceshipInimigos), 0, &threadID_naves_inimigas_dodge);
-	if (handle_naves_inimigas_dodge == NULL) {
-		_tprintf(TEXT("Erro: Não possivel a criação Threads das naves básicas.\n"));
-		return 1;
-	}
-
-	/*
-	Lançamento de thread para controlar naves inimigas lentas
-	*/
-	handle_naves_inimigas_lento = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaNavesInimigasLento, (LPVOID)(&gameData.spaceshipInimigos), 0, &threadID_naves_inimigas_lento);
-	if (handle_naves_inimigas_lento == NULL) {
-		_tprintf(TEXT("Erro: Não possivel a criação Threads das naves básicas.\n"));
-		return 1;
-	}
 
 	/*
 	Lançamento de thread para controlar os tiros lançados
 	*/
-	handle_controla_tiros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaTirosLancados, (LPVOID)(&gameData.tiros), 0, &threadID_controla_tiros);
+	handle_controla_tiros = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaTirosLancados, NULL, 0, &threadID_controla_tiros);
 	if (handle_controla_tiros == NULL) {
 		_tprintf(TEXT("Erro: Não possivel a criação Threads das naves básicas.\n"));
 		return 1;
 	}
 
+	HANDLE mutex;
+	while (1) {
+		system("cls");
+		gameView = (PGAMEDATA)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+		if (hMemoriaJogo == NULL) {
+			_tprintf(TEXT("[Erro] na memoria partilhada 'imprime nave inimiga'\n"));
+			return -1;
+		}
+		for (int i = 0; i < NUM_INIMIGOS; i++) {
+			mutex = CreateMutex(NULL, FALSE, TEXT("mutexThreadsNavesInimigas"));
+			WaitForSingleObject(mutex, INFINITE);
+			goToXY(gameView->spaceshipInimigos[i].coordenadas.X, gameView->spaceshipInimigos[i].coordenadas.Y);
+			_tprintf(TEXT("%d"), gameView->spaceshipInimigos[i].id);
+			ReleaseMutex(mutex);
+		}
+		CloseHandle(mutex);
+		UnmapViewOfFile(gameView);
+		Sleep(100);
+	}
+
 	_gettch();
 
-	CloseHandle(handle_naves_inimigas_basicas);
-	CloseHandle(handle_naves_inimigas_dodge);
-	CloseHandle(handle_naves_inimigas_lento);
+	CloseHandle(handle_naves_inimigas);
 	CloseHandle(handle_controla_tiros);
 	CloseHandle(threadsMutex);
+	CloseHandle(hMemoriaJogo);
 	return 0;
 }
 
-void imprimeNaveInimiga(SPACESHIP * naveInimiga) {
-	HANDLE mutex;
-	mutex = CreateMutex(NULL, FALSE, TEXT("mutexThreadsNavesInimigas"));
-	WaitForSingleObject(mutex, INFINITE);
-	goToXY(naveInimiga->coordenadas.X, naveInimiga->coordenadas.Y);
-	_tprintf(TEXT("%d"), naveInimiga->id);
-	naveInimiga->coordenadas.Y++;
-	ReleaseMutex(mutex);
-	CloseHandle(mutex);
-}
-
-DWORD WINAPI controlaNavesInimigasBasicas(LPVOID param) {
-	SPACESHIP *naveInimiga = ((SPACESHIP *)param);
+DWORD WINAPI controlaNavesInimigas(LPVOID param) {
+	PGAMEDATA gameView;
+	gameView = (PGAMEDATA)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+	if (hMemoriaJogo == NULL) {
+		_tprintf(TEXT("[Erro] na memoria partilhada 'controlaNavesInimigas'\n"));
+		return -1;
+	}
 	while (1) {
 		for (int i = 0; i < NUM_INIMIGOS; i++) {
-			if (naveInimiga[i].tipoSpaceship == SPACESHIP_INIMIGO_TIPO_BASICO) {
-				if (random(1, 100) < 85) {
-					imprimeNaveInimiga(&naveInimiga[i]);
+			switch (gameView->spaceshipInimigos[i].tipoSpaceship){	
+			case SPACESHIP_INIMIGO_TIPO_BASICO:
+				if (random(1, 100) < 65) {
+					gameView->spaceshipInimigos[i].coordenadas.Y++;
+				}else {
+					if (random(1, 100) < 45) {
+						gameView->spaceshipInimigos[i].coordenadas.X++;
+					}else {
+						if (random(1, 100) < 45) {
+							gameView->spaceshipInimigos[i].coordenadas.X--;
+						}
+					}
 				}
 				Sleep(SPACESHIP_BASE_SPEED);
-			}
-		}
-	}
-	return 0;
-}
-
-DWORD WINAPI controlaNavesInimigasDODGE(LPVOID param) {
-	SPACESHIP *naveInimiga = ((SPACESHIP *)param);
-	while (1) {
-		for (int i = 0; i < NUM_INIMIGOS; i++) {
-			if (naveInimiga[i].tipoSpaceship == SPACESHIP_INIMIGO_TIPO_DODGE) {
-				if (random(1, 100) < 85) {
-					imprimeNaveInimiga(&naveInimiga[i]);
+				break;
+			case SPACESHIP_INIMIGO_TIPO_DODGE:
+				if (random(1, 100) < 35) {
+					gameView->spaceshipInimigos[i].coordenadas.Y++;
+				}
+				else {
+					if (random(1, 100) < 50) {
+						gameView->spaceshipInimigos[i].coordenadas.X++;
+					}
+						if (random(1, 100) < 45) {
+							gameView->spaceshipInimigos[i].coordenadas.X--;
+						}
 				}
 				Sleep((int)(SPACESHIP_BASE_SPEED * 1.2));
-			}
-		}
-	}
-	return 0;
-}
-
-DWORD WINAPI controlaNavesInimigasLento(LPVOID param) {
-	SPACESHIP *naveInimiga = ((SPACESHIP *)param);
-	while (1) {
-		for (int i = 0; i < NUM_INIMIGOS; i++) {
-			if (naveInimiga[i].tipoSpaceship == SPACESHIP_INIMIGO_TIPO_LENTO) {
-				if (random(1, 100) < 85) {
-					imprimeNaveInimiga(&naveInimiga[i]);
+				break;
+			case SPACESHIP_INIMIGO_TIPO_LENTO:
+				if (random(1, 100) < 65) {
+					gameView->spaceshipInimigos[i].coordenadas.Y++;
+				}
+				else {
+					if (random(1, 100) < 45) {
+						gameView->spaceshipInimigos[i].coordenadas.X++;
+					}
+					else {
+						if (random(1, 100) < 45) {
+							gameView->spaceshipInimigos[i].coordenadas.X--;
+						}
+					}
 				}
 				Sleep((int)(SPACESHIP_BASE_SPEED * 0.8));
+				break;
 			}
 		}
 	}
+	UnmapViewOfFile(gameView);
 	return 0;
 }
 
+
 DWORD WINAPI controlaTirosLancados(LPVOID param) {
-	SAB * tirosLancados = ((SAB *)param);
+	/*SAB * tirosLancados = ((SAB *)param);
 	while (1) {
 		for (int i = 0; i < NUM_MAX_TIROS; i++) {
 			if (tirosLancados[i].direcao != SAB_INVALID) {
@@ -213,7 +221,7 @@ DWORD WINAPI controlaTirosLancados(LPVOID param) {
 				//TODO checkar se bateu em algo
 			}
 		}
-	}
+	}*/
 	return 0;
 }
 

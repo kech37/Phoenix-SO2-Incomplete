@@ -29,6 +29,7 @@ TCHAR SemaforoWrite[] = TEXT("Escrever");
 #endif
 
 #define PartilhaMensagem TEXT("Partilha cenas e isso tudo xD")
+#define MAPAJOGO TEXT("MAPAJOGO")
 #define BUFFERTAM sizeof(Buffer)
 
 /*-------------------------Todas as estruturas que vamos partilhar tem que ser aqui para depois mapear percebes????*/
@@ -76,8 +77,8 @@ typedef struct Buffer {
 	int numeroMensagens;
 	MsgCliente buffer[MAXBufer];
 	
-
 } Buffer, *PBuffer;
+
 PBuffer mensager;
 
 
@@ -151,4 +152,4 @@ typedef struct _GAMEDATA {
 	POWERUP		powerups[NUM_MAX_POWERUPS];
 	SAB			tiros[NUM_MAX_TIROS];
 	SAB			bombas[NUM_MAX_BOMBAS];
-}GAMEDATA;
+}GAMEDATA, *PGAMEDATA;
