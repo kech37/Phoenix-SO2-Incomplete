@@ -55,11 +55,11 @@ void TrataMensagens() {
 //ficar no infinito e mais a alem a trocar mensagens xD
 DWORD WINAPI ThreadProdutor(LPVOID param) {
 	while (1) { EnviaMensagens();}
-	return;
+	return -1;
 }
 
 //para mandar mensagem para o servidor 
 DWORD WINAPI ThreadConsumidor(LPVOID param) { 
 	while (1) { TrataMensagens();} // ver esta merda porque depois temos que terminar as mensagens quando o jogo terminar 
-	return ;
+	return -1;
 }

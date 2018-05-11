@@ -22,20 +22,6 @@ HANDLE hMemoriaJogo;
 TCHAR SemaforoRead[] = TEXT("Ler");
 TCHAR SemaforoWrite[] = TEXT("Escrever");
 
-
-#define	SPACESHIP_DEFENDER_TYPE		0x00;
-#define SPACESHIP_ENEMY_TYPE_BASIC	0x01;
-#define SPACESHIP_ENEMY_TYPE_DODGE	0x02;
-#define SPACESHIP_ENEMY_TYPE_SLOW	0x03;
-#define POWERUP_TYPE_SHILD		0x00;
-#define POWERUP_TYPE_ICE		0x01;
-#define POWERUP_TYPE_BATTERY	0x02;
-#define POWERUP_TYPE_PLUS		0x03;
-#define POWERUP_TYPE_LIFE		0x04;
-#define POWERUP_TYPE_ALCOOL		0x05;
-#define POWERUP_TYPE_EXTRA		0x06;
-
-
 #ifdef Phoenix_DLL_EXPORTS
 #define Phoenix_DLL __declspec(dllexport)
 #else
@@ -97,59 +83,72 @@ PBuffer mensager;
 
 
 /*------------------------------------------------todas as estruturas para o jogo vao estar aqui -------------------------------*/
-typedef struct SPACESHIP {
-	int id;
-	int spaceshipType;
-	int lifePoints;
-	int resistancePoints;
-	int cordX, cordY;
-	int sizeX, sizeY;
-}SPACESHIP, *Pspaceship;
+#define SPACESHIP_BASE_SPEED 800
 
+#define NUM_MAX_DEFENSORES	3
+#define NUM_MAX_POWERUPS	20
+#define NUM_MAX_TIROS		50
+#define NUM_MAX_BOMBAS		50
+#define NUM_INIMIGOS		3
 
-typedef struct POWERUP {
-	int id;
-	int powerupType;
-	int spawnOccurrence;
-	int durantion;
-	int cordX, cordY;
-	int sizeX, sizeY;
+typedef struct _COORDENADAS {
+	int X;
+	int Y;
+}COORDENADAS;
+
+typedef struct _TAMANHO {
+	int X;
+	int Y;
+}TAMANHO;
+
+#define	SPACESHIP_TIPO_DEFENSOR			0
+#define SPACESHIP_INIMIGO_TIPO_BASICO	1
+#define SPACESHIP_INIMIGO_TIPO_DODGE	2
+#define SPACESHIP_INIMIGO_TIPO_LENTO	3
+
+typedef struct _SPACESHIP {
+	int			id;
+	int			tipoSpaceship;
+	int			pontosVida;
+	int			pontosResistencia;
+	COORDENADAS coordenadas;
+	TAMANHO		tamanho;
+}SPACESHIP;
+
+#define POWERUP_TIPO_ESCUDO		0
+#define POWERUP_TIPO_GELO		1
+#define POWERUP_TIPO_BATERIA	2
+#define POWERUP_TIPO_MAIS		3
+#define POWERUP_TIPO_VIDA		4
+#define POWERUP_TIPO_ALCOOL		5
+#define POWERUP_TIPO_EXTRA		6
+
+typedef struct _POWERUP {
+	int			id;
+	int			tipoPowerup;
+	int			spawnOccurrence;
+	int			duracao;
+	COORDENADAS coordenadas;
+	TAMANHO		size;
 }POWERUP;
 
-typedef struct TIROS {
-	int id;
-	int velocidade;
-	int cordx, cordy;
-	BOOL orientacao; //0-cima // 1-baixo
+#define SAB_INVALID		   -1
+#define SAB_TIPO_BOMBA		0
+#define SAB_TIPO_TIRO		1
+#define SAB_DIRECAO_CIMA	2
+#define SAB_DIRECAO_BAIXO	3
 
-}TIROS;
+typedef struct _SAB {
+	int		id;
+	int		tipo;
+	int		direcao;
+	COORDENADAS coordenadas;
+}SAB;
 
-
-/*------a principal estrutura para o nosso jogo--------*/
-typedef struct JOGO {
-	/*fazer depois um define tam para esta merda de arrays xD apagar estalinha antes de enviar estou todo queimado */
-	POWERUP powerUps[10];
-	TIROS   tiros[10000];
-	SPACESHIP naves[50];
-	int tamx, tamy;		// tamanho da janela de jogo, para saber se os nosso bonecos estão dentro da nossa janela 
-	int pontuacao;		//por enquanto colocamos a pontuação por jogo e não por jogador
-}JOGO, *PJOGO;
-
-#ifdef __cpluplus
-extern "C" {
-#endif
-
-	//Variável global da DLL
-	extern Phoenix_DLL int nDLL;
-	extern  Phoenix_DLL PBuffer mensagemBuffer;
-	extern Phoenix_DLL PJOGO jogo;
-	Phoenix_DLL void EnviaMensagens();
-	Phoenix_DLL void Sincronizacao();
-	Phoenix_DLL void TrataMensagens();
-	Phoenix_DLL DWORD WINAPI ThreadProdutor(LPVOID param);
-	Phoenix_DLL DWORD WINAPI ThreadConsumidor(LPVOID param);
-	//exemplo da aula 
-	//	Phoenix_DLL int UmaString(void);
-#ifdef __cplusplus
-}
-#endif
+typedef struct _GAMEDATA {
+	SPACESHIP	spaceshipInimigos[NUM_INIMIGOS];
+	SPACESHIP	spaceshipDefensores[NUM_MAX_DEFENSORES];
+	POWERUP		powerups[NUM_MAX_POWERUPS];
+	SAB			tiros[NUM_MAX_TIROS];
+	SAB			bombas[NUM_MAX_BOMBAS];
+}GAMEDATA;
