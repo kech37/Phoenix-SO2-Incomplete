@@ -134,7 +134,9 @@ typedef struct JOGO {
 	int pontuacao;		//por enquanto colocamos a pontuação por jogo e não por jogador
 }JOGO, *PJOGO;
 
+#ifdef __cpluplus
 extern "C" {
+#endif
 
 	//Variável global da DLL
 	extern Phoenix_DLL int nDLL;
@@ -147,4 +149,6 @@ extern "C" {
 	Phoenix_DLL DWORD WINAPI ThreadConsumidor(LPVOID param);
 	//exemplo da aula 
 	//	Phoenix_DLL int UmaString(void);
+#ifdef __cplusplus
 }
+#endif
