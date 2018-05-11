@@ -1,4 +1,12 @@
+#pragma once
 #include <conio.h>
+#include <windows.h>
+#include <tchar.h>
+#include <io.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>  
+#include <stdlib.h> 
 #include "../Phoenix_DLL/dll.h"
 
 
@@ -16,6 +24,12 @@ DWORD WINAPI checkDefenderSpaceshop(LPVOID param);
 void goToXY(int x, int y);
 
 int _tmain(int argc, LPTSTR argv[]) {
+
+	/*vamos  começar aqui a sincronização para troca de mensagens*/
+	Sincronizacao();
+	/*-----------------------------*/
+
+
 #ifdef UNICODE
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
@@ -27,7 +41,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 	SPACESHIP * defenderSpaceship = NULL;
 	
 	
-
 	srand((unsigned int) time(NULL));
 
 	threadDefenderSpaceshipID = (DWORD *)malloc(sizeof(DWORD) * NUM_THREADS);
