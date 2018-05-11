@@ -7,6 +7,7 @@
 #include <io.h>
 #include <fcntl.h>
 
+
 #define TAM 256
 //tamanho do buffer 
 #define MAXBufer 80 

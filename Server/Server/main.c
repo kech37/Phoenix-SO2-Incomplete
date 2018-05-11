@@ -1,18 +1,4 @@
-#pragma once
-#include <conio.h>
-#include <windows.h>
-#include <tchar.h>
-#include <io.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <string.h>  
-#include <stdlib.h> 
-#include "../Phoenix_DLL/dll.h"
-
-
-#define NUM_THREADS 3
-
-#define TAMECRA 50
+#include "main.h"
 
 int random(int min, int max) {
 	return(min + rand() % (max - min));
@@ -26,7 +12,7 @@ void goToXY(int x, int y);
 int _tmain(int argc, LPTSTR argv[]) {
 
 	/*vamos  começar aqui a sincronização para troca de mensagens*/
-	Sincronizacao();
+	//Sincronizacao();
 	/*-----------------------------*/
 
 

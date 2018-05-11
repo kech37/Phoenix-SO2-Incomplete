@@ -1,15 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <tchar.h>
-#include <io.h>
-#include <windows.h>
-#include <stdlib.h> 
-#include <fcntl.h>
-#include "../Phoenix_DLL/dll.h"
-
-#define _CRT_SECURE_NO_WARNINGS
-HANDLE hThreadEscritor;
-DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
+#include "gateway.h"
 int _tmain(int argc, LPTSTR argv[]) {
 
 
