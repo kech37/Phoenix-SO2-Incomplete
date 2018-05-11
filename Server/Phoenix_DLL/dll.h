@@ -28,7 +28,7 @@ TCHAR SemaforoWrite[] = TEXT("Escrever");
 #define Phoenix_DLL __declspec(dllimport)
 #endif
 
-#define PartilhaMensagem TEXT("Partilha cenas e isso tudo xD")
+#define PARTILHAMENSAGENS TEXT("PARTILHAMENSAGENS")
 #define MAPAJOGO TEXT("MAPAJOGO")
 #define BUFFERTAM sizeof(Buffer)
 

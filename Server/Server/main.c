@@ -1,8 +1,10 @@
 #include "main.h"
+
 int random(int min, int max);
 void goToXY(int x, int y);
 DWORD WINAPI controlaNavesInimigas(LPVOID param);
 DWORD WINAPI controlaTirosLancados(LPVOID param);
+DWORD WINAPI controlaNaveDefensora(LPVOID param);
 
 int _tmain(int argc, LPTSTR argv[]) {
 	PGAMEDATA gameView;
@@ -144,6 +146,22 @@ int _tmain(int argc, LPTSTR argv[]) {
 	return 0;
 }
 
+//Servirá como consumidor pois tudo o resto é trabalhado por 'IA'
+DWORD WINAPI controlaNaveDefensora(LPVOID param) {
+	WaitForSingleObject(MutexWrite, INFINITE);
+	WaitForSingleObject(SemaforoReadSin, INFINITE);
+
+	int n = mensager->buffer[mensager->output].id;
+	_tprintf(_TEXT("::->%d \n"), n);
+	mensager->buffer[mensager->output].id = 0;
+	mensager->output = (mensager->output + 1) % MAXBufer;
+	mensager->numeroMensagens--;
+
+	ReleaseMutex(MutexWrite);
+	ReleaseSemaphore(SemaforoWriteSin, 1, NULL);
+	return 0;
+}
+
 DWORD WINAPI controlaNavesInimigas(LPVOID param) {
 	PGAMEDATA gameView;
 	gameView = (PGAMEDATA)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
@@ -204,7 +222,6 @@ DWORD WINAPI controlaNavesInimigas(LPVOID param) {
 	UnmapViewOfFile(gameView);
 	return 0;
 }
-
 
 DWORD WINAPI controlaTirosLancados(LPVOID param) {
 	/*SAB * tirosLancados = ((SAB *)param);

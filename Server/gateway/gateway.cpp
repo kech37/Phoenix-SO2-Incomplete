@@ -9,7 +9,11 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stdout), _O_WTEXT);
 #endif
 
-	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, BUFFERTAM, PartilhaMensagem);
+	//tem que se lançar uma thread para que através 
+	//de named pipes mandei para os clientes 
+	//o estado do jogo
+
+	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, BUFFERTAM, PARTILHAMENSAGENS);
 	if (!hMemoriaBuffer) {
 		_tprintf(TEXT("[Erro]Bufer"));
 		return -1;
@@ -21,6 +25,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 		return -1;
 	}
 	
+
+
 	// e so ver o exemplo que o prof deu sobre o escritor que vais perceber isto meu 
 	hThreadEscritor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, NULL, 0, &threadId);
 	if (hThreadEscritor != NULL)
