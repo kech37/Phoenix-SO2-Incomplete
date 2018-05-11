@@ -17,7 +17,7 @@ DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
 
 	// vai iniciar os metodos de sincronização para o nosso jogo 
 	
-	Sinronizacao();
+	Sincronizacao();
 
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -61,10 +61,3 @@ DWORD WINAPI ThreadProdutor(LPVOID param); //LADO DO GATEWAY
 	return 0;
 }
 
-DWORD WINAPI ThreadProdutor(LPVOID param) {
-
-	while (1) { //Isto é para passar para a DLL
-		EnviaMensagens();
-	}
-	return 0;
-}

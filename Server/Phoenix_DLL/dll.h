@@ -9,7 +9,7 @@
 
 #define TAM 256
 //tamanho do buffer 
-#define MAX 80 
+#define MAXBufer 80 
 //dimensão da mensagem
 #define SIZE 100  
 HANDLE SemaforoWriteSin;
@@ -56,12 +56,13 @@ typedef enum Teclas {
 	ESPACO         /*para um gajo poder disparar*/
 }Teclas;
 
-
+/*ciclos de vida do nosso jogo mas por enquanto nao vai ser preciso*/
 typedef enum MensagemCliente {
 	Start,
 	EmJogo
 } MensagemCliente;
 
+/*ciclos de vida do nosso jogo mas por enquanto nao vai ser preciso*/
 typedef enum MensagemServidor {
 	AIniciar,
 	AJogar
@@ -70,7 +71,6 @@ typedef enum MensagemServidor {
 //Mensagem que vai do Gateway para o cliente
 typedef struct MsgServidor {
 	MensagemServidor mensagem;
-
 } MsgServidor;
 
 
@@ -78,16 +78,17 @@ typedef struct MsgServidor {
 typedef struct MsgCliente {
 	MensagemCliente mensagem;
 	int id;
-	TCHAR nome[SIZE];
-	TCHAR tecla[SIZE];
+	TCHAR nome[SIZE];		//para depois comparar
+	TCHAR tecla[SIZE];		//para depois comparar com o nome da estrutura que criamos me cima o ze
 } MsgCliente;
 
 
 typedef struct Buffer {
+	int input;
+	int output;
 	int numeroMensagens;
-	MsgCliente buffer[MAX];
-	int in;
-	int out;
+	MsgCliente buffer[MAXBufer];
+	
 
 } Buffer, *PBuffer;
 PBuffer mensager;
@@ -95,7 +96,6 @@ PBuffer mensager;
 
 
 /*------------------------------------------------todas as estruturas para o jogo vao estar aqui -------------------------------*/
-
 typedef struct SPACESHIP {
 	int id;
 	int spaceshipType;
@@ -130,8 +130,8 @@ typedef struct JOGO {
 	POWERUP powerUps[10];
 	TIROS   tiros[10000];
 	SPACESHIP naves[50];
-	int tamx, tamy;
-	int pontuacao;
+	int tamx, tamy;		// tamanho da janela de jogo, para saber se os nosso bonecos estão dentro da nossa janela 
+	int pontuacao;		//por enquanto colocamos a pontuação por jogo e não por jogador
 }JOGO, *PJOGO;
 
 extern "C" {
@@ -141,10 +141,10 @@ extern "C" {
 	extern  Phoenix_DLL PBuffer mensagemBuffer;
 	extern Phoenix_DLL PJOGO jogo;
 	Phoenix_DLL void EnviaMensagens();
-	Phoenix_DLL void Sinronizacao();
+	Phoenix_DLL void Sincronizacao();
 	Phoenix_DLL void TrataMensagens();
-
+	Phoenix_DLL DWORD WINAPI ThreadProdutor(LPVOID param);
+	Phoenix_DLL DWORD WINAPI ThreadConsumidor(LPVOID param);
 	//exemplo da aula 
 	//	Phoenix_DLL int UmaString(void);
-
 }

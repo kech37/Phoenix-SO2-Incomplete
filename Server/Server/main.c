@@ -67,6 +67,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	return 0;
 }
 
+
 DWORD WINAPI checkDefenderSpaceshop(LPVOID param) {
 	HANDLE hSem;
 	SPACESHIP *tempSpaceship = (SPACESHIP *)param;
