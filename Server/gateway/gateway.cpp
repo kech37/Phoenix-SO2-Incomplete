@@ -4,8 +4,7 @@
 
 	DWORD threadId;
 
-	// vai iniciar os metodos de sincronização para o nosso jogo 
-	
+	// vamos sicronizar tudo para o troca de mensagens do jogo
 	Sincronizacao();
 
 #ifdef UNICODE 
@@ -14,7 +13,6 @@
 
 #endif
 
-	// vamos iniciar para partilhar a memoria ate pode ir para um .txt 
 	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, BUFFERTAM, PartilhaMensagem);
 
 

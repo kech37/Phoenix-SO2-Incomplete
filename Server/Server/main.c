@@ -5,7 +5,6 @@ int random(int min, int max) {
 }
 
 HANDLE hMutex;
-
 DWORD WINAPI checkDefenderSpaceshop(LPVOID param);
 void goToXY(int x, int y);
 
@@ -19,16 +18,19 @@ int _tmain(int argc, LPTSTR argv[]) {
 #ifdef UNICODE
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
-#endif // UNICODE
+#endif 
 
 
 	DWORD * threadDefenderSpaceshipID;
 	HANDLE * hThreadDefenderSpaceship;
 	SPACESHIP * defenderSpaceship = NULL;
-	
+
+	/*depois temos que fazer aqui as configurações pedimos os:
+	->numero de naves
+	-> numero de tiros 
+	-> numero de cenas*/
 	
 	srand((unsigned int) time(NULL));
-
 	threadDefenderSpaceshipID = (DWORD *)malloc(sizeof(DWORD) * NUM_THREADS);
 	hThreadDefenderSpaceship = (HANDLE *)malloc(sizeof(HANDLE) * NUM_THREADS);
 	defenderSpaceship = (SPACESHIP *)malloc(sizeof(SPACESHIP) * NUM_THREADS);
