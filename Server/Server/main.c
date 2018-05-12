@@ -8,6 +8,7 @@ DWORD WINAPI controlaNaveDefensora(LPVOID param);
 
 int _tmain(int argc, LPTSTR argv[]) {
 	PGAMEDATA gameView;
+	
 	/*
 	Handle para mutex das threads
 	*/

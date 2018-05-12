@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <stdlib.h> 
 #include <fcntl.h>
-#include "../Phoenix_DLL/dll.h"
+#include "../DLL/dll.h"
 
 #define _CRT_SECURE_NO_WARNINGS
 HANDLE hThreadEscritor;

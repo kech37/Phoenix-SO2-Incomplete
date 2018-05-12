@@ -22,11 +22,14 @@ HANDLE hMemoriaJogo;
 TCHAR SemaforoRead[] = TEXT("Ler");
 TCHAR SemaforoWrite[] = TEXT("Escrever");
 
-#ifdef Phoenix_DLL_EXPORTS
-#define Phoenix_DLL __declspec(dllexport)
+#ifdef	DLL_EXPORTS
+#define DLL __declspec(dllexport)
 #else
-#define Phoenix_DLL __declspec(dllimport)
+#define DLL __declspec(dllimport)
 #endif
+
+
+
 
 #define PARTILHAMENSAGENS TEXT("PARTILHAMENSAGENS")
 #define MAPAJOGO TEXT("MAPAJOGO")
@@ -76,10 +79,10 @@ typedef struct Buffer {
 	int output;
 	int numeroMensagens;
 	MsgCliente buffer[MAXBufer];
-	
+
 } Buffer, *PBuffer;
 
-PBuffer mensager;
+PBuffer mensager=NULL;
 
 
 
@@ -153,3 +156,16 @@ typedef struct _GAMEDATA {
 	SAB			tiros[NUM_MAX_TIROS];
 	SAB			bombas[NUM_MAX_BOMBAS];
 }GAMEDATA, *PGAMEDATA;
+
+
+
+extern"C" {
+	extern DLL int nDLL;
+	extern  DLL PBuffer mensagemBuffer;
+	extern DLL PGAMEDATA gameData;
+	DLL void EnviaMensagens();
+	DLL void Sincronizacao();
+	DLL void TrataMensagens();
+	DLL DWORD WINAPI ThreadProdutor(LPVOID param);
+	DLL DWORD WINAPI ThreadConsumidor(LPVOID param);
+}

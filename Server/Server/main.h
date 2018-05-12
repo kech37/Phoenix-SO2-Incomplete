@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <stdlib.h> 
 #include <fcntl.h>
-#include "../Phoenix_DLL/dll.h"
+#include "../DLL/dll.h"
 #define NUM_THREADS 3
 #define TAMECRA 50
 
