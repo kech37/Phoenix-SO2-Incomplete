@@ -82,7 +82,7 @@ typedef struct Buffer {
 
 } Buffer, *PBuffer;
 
-PBuffer mensager=NULL;
+
 
 
 
@@ -158,8 +158,12 @@ typedef struct _GAMEDATA {
 	SAB			bombas[NUM_MAX_BOMBAS];
 }GAMEDATA, *PGAMEDATA;
 
-PGAMEDATA gameView;
 
+
+//*******quando descobrir o porque de esta cena dar merda tenho que passar para a dll.cpp
+PGAMEDATA gameView = NULL;
+PBuffer mensager = NULL;
+//****************************************************************************************
 
 #ifdef __cplusplus 
 extern "C" {
@@ -171,6 +175,5 @@ extern "C" {
 	DLL void TrataMensagens();
 	DLL DWORD WINAPI ThreadProdutor(LPVOID param);
 	DLL DWORD WINAPI ThreadConsumidor(LPVOID param);
-
 }
 #endif

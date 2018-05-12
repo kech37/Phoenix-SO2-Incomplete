@@ -10,7 +10,7 @@ DWORD WINAPI controlaNaveDefensora(LPVOID param);
 int _tmain(int argc, LPTSTR argv[]) {
 
 	// esta merda aqui em baixo  nao esta ca a fazer nada tens e que usar o jogo que esta a ser partilhado
-	// sen nao estas a jogar tu sozinho no servidor
+	// se nao estas a jogar tu sozinho no servidor
 		//PGAMEDATA gameView;
 	/*
 	Handle para mutex das threads
@@ -123,6 +123,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 		return 1;
 	}
 
+	// ero so chamar o sincro da dll é para isso que isso serve 
 	HANDLE mutex;
 	while (1) {
 		system("cls");
@@ -153,6 +154,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 }
 
 //Servirá como consumidor pois tudo o resto é trabalhado por 'IA'
+// isto nao pode estar aqui men olha ve a minha função da dll de envia mensagem e trata mensagem 
 DWORD WINAPI controlaNaveDefensora(LPVOID param) {
 	WaitForSingleObject(MutexWrite, INFINITE);
 	WaitForSingleObject(SemaforoReadSin, INFINITE);

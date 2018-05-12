@@ -30,6 +30,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	gameView = (PGAMEDATA) MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 	if (gameView == NULL)
 		return-1;
+
 	// e so ver o exemplo que o prof deu sobre o escritor que vais perceber isto meu 
 	hThreadEscritor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, NULL, 0, &threadId);
 	if (hThreadEscritor != NULL)
