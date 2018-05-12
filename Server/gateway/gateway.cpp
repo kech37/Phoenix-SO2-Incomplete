@@ -14,10 +14,10 @@ int _tmain(int argc, LPTSTR argv[]) {
 	//tem que se lançar uma thread para que através 
 	//de named pipes mandei para os clientes 
 	//o estado do jogo
-
+	hMemoriaJogo= CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(GAMEDATA),TEXT("sei la se e o chines se vou partilhar se e o ..."));
 	hMemoriaBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, BUFFERTAM, PARTILHAMENSAGENS);
-	if (!hMemoriaBuffer) {
-		_tprintf(TEXT("[Erro]Bufer"));
+	if (!hMemoriaBuffer || !hMemoriaJogo) {
+		_tprintf(TEXT("[Erro]Bufer ou no jogo agora escolhe"));
 		return -1;
 	}
 
@@ -27,8 +27,9 @@ int _tmain(int argc, LPTSTR argv[]) {
 		return -1;
 	}
 	
-
-
+	gameView = (PGAMEDATA) MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+	if (gameView == NULL)
+		return-1;
 	// e so ver o exemplo que o prof deu sobre o escritor que vais perceber isto meu 
 	hThreadEscritor = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ThreadProdutor, NULL, 0, &threadId);
 	if (hThreadEscritor != NULL)
@@ -37,6 +38,9 @@ int _tmain(int argc, LPTSTR argv[]) {
 		_tprintf(TEXT("Erro ao criar Thread Escritor\n"));
 		return -1;
 	}
+
+	/*actualizar threds
+	mas vais ter que ficar depois de certeza*/
 	WaitForSingleObject(hThreadEscritor, INFINITE);
 	
 	UnmapViewOfFile(mensager);

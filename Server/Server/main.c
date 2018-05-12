@@ -2,14 +2,16 @@
 
 int random(int min, int max);
 void goToXY(int x, int y);
-/*menino carlos estas funçõs podem e devem ir para a DLL já a consegui por a funcionar*/
+/*carlos isto podia e devia ir para  a dll*/
 DWORD WINAPI controlaNavesInimigas(LPVOID param);
 DWORD WINAPI controlaTirosLancados(LPVOID param);
 DWORD WINAPI controlaNaveDefensora(LPVOID param);
 
 int _tmain(int argc, LPTSTR argv[]) {
-	PGAMEDATA gameView;
-	
+
+	// esta merda aqui em baixo  nao esta ca a fazer nada tens e que usar o jogo que esta a ser partilhado
+	// sen nao estas a jogar tu sozinho no servidor
+		//PGAMEDATA gameView;
 	/*
 	Handle para mutex das threads
 	*/
@@ -45,6 +47,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	init inimigos
 	*/
 
+
+	/*esta merda tem que ser no gateway como te disse men */
 	gameView = (PGAMEDATA)MapViewOfFile(hMemoriaJogo, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 	if (hMemoriaJogo == NULL) {
 		_tprintf(TEXT("[Erro] na memoria partilhada\n"));
@@ -92,7 +96,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	UnmapViewOfFile(gameView);
 
 	/*
-		Cria mutex
+	Cria mutex
 	*/
 	threadsMutex = CreateMutex(NULL, FALSE, TEXT("mutexThreadsNavesInimigas"));
 	if (threadsMutex == NULL) {
@@ -173,14 +177,16 @@ DWORD WINAPI controlaNavesInimigas(LPVOID param) {
 	}
 	while (1) {
 		for (int i = 0; i < NUM_INIMIGOS; i++) {
-			switch (gameView->spaceshipInimigos[i].tipoSpaceship){	
+			switch (gameView->spaceshipInimigos[i].tipoSpaceship) {
 			case SPACESHIP_INIMIGO_TIPO_BASICO:
 				if (random(1, 100) < 65) {
 					gameView->spaceshipInimigos[i].coordenadas.Y++;
-				}else {
+				}
+				else {
 					if (random(1, 100) < 45) {
 						gameView->spaceshipInimigos[i].coordenadas.X++;
-					}else {
+					}
+					else {
 						if (random(1, 100) < 45) {
 							gameView->spaceshipInimigos[i].coordenadas.X--;
 						}
@@ -196,9 +202,9 @@ DWORD WINAPI controlaNavesInimigas(LPVOID param) {
 					if (random(1, 100) < 50) {
 						gameView->spaceshipInimigos[i].coordenadas.X++;
 					}
-						if (random(1, 100) < 45) {
-							gameView->spaceshipInimigos[i].coordenadas.X--;
-						}
+					if (random(1, 100) < 45) {
+						gameView->spaceshipInimigos[i].coordenadas.X--;
+					}
 				}
 				Sleep((int)(SPACESHIP_BASE_SPEED * 1.2));
 				break;
@@ -228,18 +234,18 @@ DWORD WINAPI controlaNavesInimigas(LPVOID param) {
 DWORD WINAPI controlaTirosLancados(LPVOID param) {
 	/*SAB * tirosLancados = ((SAB *)param);
 	while (1) {
-		for (int i = 0; i < NUM_MAX_TIROS; i++) {
-			if (tirosLancados[i].direcao != SAB_INVALID) {
-				//TODO PRECISA DE MUTEX?
-				if (tirosLancados[i].direcao == SAB_DIRECAO_CIMA) {
-					tirosLancados[i].coordenadas.Y--;
-				}
-				else if (tirosLancados[i].direcao == SAB_DIRECAO_BAIXO) {
-					tirosLancados[i].coordenadas.Y++;
-				}
-				//TODO checkar se bateu em algo
-			}
-		}
+	for (int i = 0; i < NUM_MAX_TIROS; i++) {
+	if (tirosLancados[i].direcao != SAB_INVALID) {
+	//TODO PRECISA DE MUTEX?
+	if (tirosLancados[i].direcao == SAB_DIRECAO_CIMA) {
+	tirosLancados[i].coordenadas.Y--;
+	}
+	else if (tirosLancados[i].direcao == SAB_DIRECAO_BAIXO) {
+	tirosLancados[i].coordenadas.Y++;
+	}
+	//TODO checkar se bateu em algo
+	}
+	}
 	}*/
 	return 0;
 }

@@ -86,6 +86,7 @@ PBuffer mensager=NULL;
 
 
 
+
 /*------------------------------------------------todas as estruturas para o jogo vao estar aqui -------------------------------*/
 #define SPACESHIP_BASE_SPEED 800
 
@@ -157,14 +158,14 @@ typedef struct _GAMEDATA {
 	SAB			bombas[NUM_MAX_BOMBAS];
 }GAMEDATA, *PGAMEDATA;
 
-
+PGAMEDATA gameView;
 
 
 #ifdef __cplusplus 
 extern "C" {
 	extern DLL int nDLL;
 	extern  DLL PBuffer mensagemBuffer;
-	extern DLL PGAMEDATA gameData;
+	extern DLL PGAMEDATA gameView;
 	DLL void EnviaMensagens();
 	DLL void Sincronizacao();
 	DLL void TrataMensagens();
