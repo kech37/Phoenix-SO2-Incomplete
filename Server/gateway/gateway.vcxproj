@@ -78,6 +78,9 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link />
+    <Link>
+      <SubSystem>Console</SubSystem>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -11,7 +11,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	// esta merda aqui em baixo  nao esta ca a fazer nada tens e que usar o jogo que esta a ser partilhado
 	// se nao estas a jogar tu sozinho no servidor
-		//PGAMEDATA gameView;
+		PGAMEDATA gameView;
 	/*
 	Handle para mutex das threads
 	*/
@@ -159,8 +159,7 @@ DWORD WINAPI controlaNaveDefensora(LPVOID param) {
 	WaitForSingleObject(MutexWrite, INFINITE);
 	WaitForSingleObject(SemaforoReadSin, INFINITE);
 
-	int n = mensager->buffer[mensager->output].id;
-	_tprintf(_TEXT("::->%d \n"), n);
+	_tprintf(_TEXT("::->%d \n"), mensager->buffer[mensager->output].id);
 	mensager->buffer[mensager->output].id = 0;
 	mensager->output = (mensager->output + 1) % MAXBufer;
 	mensager->numeroMensagens--;

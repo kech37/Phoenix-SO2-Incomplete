@@ -6,8 +6,6 @@
 #include <tchar.h>
 #include <io.h>
 #include <fcntl.h>
-
-
 #define TAM 256
 //tamanho do buffer 
 #define MAXBufer 80 
@@ -29,8 +27,6 @@ TCHAR SemaforoWrite[] = TEXT("Escrever");
 #endif
 
 
-
-
 #define PARTILHAMENSAGENS TEXT("PARTILHAMENSAGENS")
 #define MAPAJOGO TEXT("MAPAJOGO")
 #define BUFFERTAM sizeof(Buffer)
@@ -39,24 +35,20 @@ TCHAR SemaforoWrite[] = TEXT("Escrever");
 
 
 /*-------------------------todas as estruturas de comunicação vao estar neste sitio ----------------------------------*/
-typedef enum Teclas {
-	CIMA,
-	BAIXO,
-	ESQUERDA,
-	DIREITA,
-	ESPACO         /*para um gajo poder disparar*/
+typedef struct Teclas {
+	int idJogador;
+	char tecla;
 }Teclas;
 
 /*ciclos de vida do nosso jogo mas por enquanto nao vai ser preciso*/
-typedef enum MensagemCliente {
-	Start,
-	EmJogo
+typedef struct MensagemCliente {
+	int idJogador;
+	char mensagem;
 } MensagemCliente;
 
 /*ciclos de vida do nosso jogo mas por enquanto nao vai ser preciso*/
-typedef enum MensagemServidor {
-	AIniciar,
-	AJogar
+typedef struct MensagemServidor {
+	char repostaServ;
 } MensagemServidor;
 
 //Mensagem que vai do Gateway para o cliente
@@ -81,10 +73,6 @@ typedef struct Buffer {
 	MsgCliente buffer[MAXBufer];
 
 } Buffer, *PBuffer;
-
-
-
-
 
 
 /*------------------------------------------------todas as estruturas para o jogo vao estar aqui -------------------------------*/
@@ -160,16 +148,16 @@ typedef struct _GAMEDATA {
 
 
 
-//*******quando descobrir o porque de esta cena dar merda tenho que passar para a dll.cpp
-PGAMEDATA gameView = NULL;
+//*******quando descobrir o porque de esta cena dar merda tenho que apagar isto e trabalhar so com o extern "c"{}
+//PGAMEDATA gameData = NULL;
 PBuffer mensager = NULL;
 //****************************************************************************************
 
 #ifdef __cplusplus 
 extern "C" {
-	extern DLL int nDLL;
-	extern  DLL PBuffer mensagemBuffer;
-	extern DLL PGAMEDATA gameView;
+	DLL int nDLL;
+	DLL PBuffer mensagemBuffer;
+	DLL PGAMEDATA gameView;
 	DLL void EnviaMensagens();
 	DLL void Sincronizacao();
 	DLL void TrataMensagens();

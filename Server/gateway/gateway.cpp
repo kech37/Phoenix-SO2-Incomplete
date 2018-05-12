@@ -1,5 +1,5 @@
 #include "gateway.h"
-#include "../DLL/dll.h"
+
 
 int _tmain(int argc, LPTSTR argv[]) {
 	DWORD threadId;
