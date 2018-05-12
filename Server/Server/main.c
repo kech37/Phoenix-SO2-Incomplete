@@ -2,6 +2,7 @@
 
 int random(int min, int max);
 void goToXY(int x, int y);
+/*menino carlos estas funçõs podem e devem ir para a DLL já a consegui por a funcionar*/
 DWORD WINAPI controlaNavesInimigas(LPVOID param);
 DWORD WINAPI controlaTirosLancados(LPVOID param);
 DWORD WINAPI controlaNaveDefensora(LPVOID param);

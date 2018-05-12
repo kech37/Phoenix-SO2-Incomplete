@@ -159,7 +159,9 @@ typedef struct _GAMEDATA {
 
 
 
-extern"C" {
+
+#ifdef __cplusplus 
+extern "C" {
 	extern DLL int nDLL;
 	extern  DLL PBuffer mensagemBuffer;
 	extern DLL PGAMEDATA gameData;
@@ -168,4 +170,6 @@ extern"C" {
 	DLL void TrataMensagens();
 	DLL DWORD WINAPI ThreadProdutor(LPVOID param);
 	DLL DWORD WINAPI ThreadConsumidor(LPVOID param);
+
 }
+#endif

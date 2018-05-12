@@ -1,9 +1,11 @@
 #include "gateway.h"
+#include "../DLL/dll.h"
 
 int _tmain(int argc, LPTSTR argv[]) {
 	DWORD threadId;
+	HANDLE hThreadEscritor;
 	// vamos sicronizar tudo para o troca de mensagens do jogo
-	//	Sincronizacao();
+		
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
