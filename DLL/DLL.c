@@ -16,38 +16,22 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 	return TRUE;
 }
 
-HFBUFFER initComunicacaoServerSide(PTBDONMEMORY param) {
-	HFBUFFER temp;
+PTBDONMEMORY initComunicacaoServerSide(PTHFBUFFER param) {
+	PTBDONMEMORY temp;
 	HANDLE hBuffer;
 
-	temp.mHandleBuffer = CreateMutex(NULL, FALSE, MUTEX_HANDLE_BUFFER);
+	param->mHandleBuffer = CreateMutex(NULL, FALSE, MUTEX_HANDLE_BUFFER);
 
-	temp.semWrite = CreateSemaphore(NULL, 0, BUFFER_SIZE, SEM_WRITE_BUFFER);
-	temp.semRead = CreateSemaphore(NULL, BUFFER_SIZE, BUFFER_SIZE, SEM_READ_BUFFER);
+	param->semWrite = CreateSemaphore(NULL, 0, BUFFER_SIZE, SEM_WRITE_BUFFER);
+	param->semRead = CreateSemaphore(NULL, BUFFER_SIZE, BUFFER_SIZE, SEM_READ_BUFFER);
 
 	hBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(BDONMEMORY), TEXT("buffer"));
-	param = (PTBDONMEMORY)MapViewOfFile(hBuffer, FILE_MAP_WRITE, 0, 0, sizeof(BDONMEMORY));
+	temp = (PTBDONMEMORY)MapViewOfFile(hBuffer, FILE_MAP_WRITE, 0, 0, sizeof(BDONMEMORY));
 
-	param->nextIn = 0;
-	param->nextOut = BUFFER_SIZE - 1;
+	temp->nextIn = 0;
+	temp->nextOut = BUFFER_SIZE - 1;
+
+	CloseHandle(hBuffer);
 
 	return temp;
 }
-
-/*HFBUFFER initComunicacaoGatewaySide(PTBDONMEMORY param) {
-	HFBUFFER temp;
-	HANDLE hBuffer;
-
-	temp.mHandleBuffer = CreateMutex(NULL, FALSE, MUTEX_HANDLE_BUFFER);
-
-	temp.semWrite = CreateSemaphore(NULL, 0, BUFFER_SIZE, SEM_WRITE_BUFFER);
-	temp.semRead = CreateSemaphore(NULL, BUFFER_SIZE, BUFFER_SIZE, SEM_READ_BUFFER);
-
-	hBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(BDONMEMORY), TEXT("buffer"));
-	param = (PTBDONMEMORY)MapViewOfFile(hBuffer, FILE_MAP_WRITE, 0, 0, sizeof(BDONMEMORY));
-
-	param->nextIn = 0;
-	param->nextOut = BUFFER_SIZE - 1;
-
-	return temp;
-}*/

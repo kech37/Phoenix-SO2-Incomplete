@@ -30,7 +30,6 @@ int _tmain(int argc, LPTSTR agrv[]) {
 		WaitForSingleObject(semRead, INFINITE);
 		WaitForSingleObject(mHandleBuffer, INFINITE);
 
-		_tprintf(TEXT("nextInt[%d]\n"), bufferMemory->nextIn);
 
 		bufferMemory->buffer[bufferMemory->nextIn] = ++o;
 		if (bufferMemory->nextIn == BUFFER_SIZE - 1) {
@@ -39,6 +38,7 @@ int _tmain(int argc, LPTSTR agrv[]) {
 		else {
 			bufferMemory->nextIn++;
 		}
+		_tprintf(TEXT("o[%d] Mandei[%d] na pos[%d]\n"), o, bufferMemory->buffer[bufferMemory->nextIn], bufferMemory->nextIn);
 
 		ReleaseMutex(mHandleBuffer);
 		ReleaseSemaphore(semWrite, 1, NULL);

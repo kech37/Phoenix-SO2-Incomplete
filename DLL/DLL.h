@@ -32,7 +32,7 @@ typedef struct _bufferDataOnMemory {
 #ifdef __cplusplus
 extern "C" {
 #endif
-	DLL HFBUFFER initComunicacaoServerSide(PTBDONMEMORY param);
+	DLL PTBDONMEMORY initComunicacaoServerSide(PTHFBUFFER param);
 #ifdef __cplusplus
 }
 #endif
