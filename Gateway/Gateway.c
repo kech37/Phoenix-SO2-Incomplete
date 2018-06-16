@@ -1,23 +1,7 @@
 #include "..\DLL\DLL.h"
 
-HANDLE hBuffer, mHandleBuffer, semRead, semWrite;
-PTBDONMEMORY bufferMemory;
-
-int o = 1;
-
-void initComunicacao() {
-	mHandleBuffer = CreateMutex(NULL, FALSE, MUTEX_HANDLE_BUFFER);
-
-	semWrite = CreateSemaphore(NULL, 0, BUFFER_SIZE, SEM_WRITE_BUFFER);
-	semRead = CreateSemaphore(NULL, BUFFER_SIZE, BUFFER_SIZE, SEM_READ_BUFFER);
-
-	hBuffer = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof(BDONMEMORY), TEXT("buffer"));
-	bufferMemory = (PTBDONMEMORY)MapViewOfFile(hBuffer, FILE_MAP_WRITE, 0, 0, sizeof(BDONMEMORY));
-
-	bufferMemory->nextIn = 0;
-	bufferMemory->nextOut = BUFFER_SIZE - 1;
-}
-
+DWORD WINAPI threadProdutora(LPVOID param);
+void printError(short * msg);
 
 int _tmain(int argc, LPTSTR agrv[]) {
 #ifdef UNICODE
@@ -25,26 +9,53 @@ int _tmain(int argc, LPTSTR agrv[]) {
 	_setmode(_fileno(stdout), _O_WTEXT);
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif // UNICODE
-	initComunicacao();
+	PCS produtorData;
+
+	produtorData.bufferMemory = initComunicacaoGatewaySide(&produtorData.handlesBuffer);
+	if (produtorData.bufferMemory == NULL) {
+		printError(TEXT("bufferMemory = initComunicacaoGatewaySide(&handlesBuffer);"));
+		return 1;
+	}
+
+	produtorData.handleThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)threadProdutora, (LPVOID)&produtorData, 0, NULL);
+	if (produtorData.handleThread == NULL) {
+		printError(TEXT("produtorData.handleThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)threadProdutora, (LPVOID)&produtorData, 0, NULL);"));
+		return 1;
+	}
+
+	WaitForSingleObject(produtorData.handleThread, INFINITE);
+
+	CloseComunicacao(&produtorData);
+
+	return 0;
+}
+
+DWORD WINAPI threadProdutora(LPVOID param) {
+	PTPCS data = (PTPCS)param;
+	int o = 0;
 	while (1) {
-		WaitForSingleObject(semRead, INFINITE);
-		WaitForSingleObject(mHandleBuffer, INFINITE);
+		WaitForSingleObject(data->handlesBuffer.semRead, INFINITE);
+		WaitForSingleObject(data->handlesBuffer.mHandleBuffer, INFINITE);
 
+		data->bufferMemory->buffer[data->bufferMemory->nextIn] = ++o;
+		_tprintf(TEXT("Mandei[%d] na pos[%d]\n"), data->bufferMemory->buffer[data->bufferMemory->nextIn], data->bufferMemory->nextIn);
 
-		bufferMemory->buffer[bufferMemory->nextIn] = ++o;
-		if (bufferMemory->nextIn == BUFFER_SIZE - 1) {
-			bufferMemory->nextIn = 0;
+		if (data->bufferMemory->nextIn == BUFFER_SIZE - 1) {
+			data->bufferMemory->nextIn = 0;
 		}
 		else {
-			bufferMemory->nextIn++;
+			data->bufferMemory->nextIn++;
 		}
-		_tprintf(TEXT("o[%d] Mandei[%d] na pos[%d]\n"), o, bufferMemory->buffer[bufferMemory->nextIn], bufferMemory->nextIn);
 
-		ReleaseMutex(mHandleBuffer);
-		ReleaseSemaphore(semWrite, 1, NULL);
+		ReleaseMutex(data->handlesBuffer.mHandleBuffer);
+		ReleaseSemaphore(data->handlesBuffer.semWrite, 1, NULL);
 
 		Sleep(500);
 
 	}
 	return 0;
+}
+
+void printError(short * msg) {
+	_tprintf(TEXT("[Gateway]Error> '%s'\n"), msg);
 }
