@@ -46,7 +46,7 @@ int _tmain(int argc, LPTSTR agrv[]) {
 
 
 
-	/*ligação client gateway*/
+	/*--------------------------------------------------------ligação client gateway-------------------------------*/
 
 	for (int i = 0; i < 10; i++)
 		hTabela[i] = INVALID_HANDLE_VALUE;
@@ -100,7 +100,7 @@ int _tmain(int argc, LPTSTR agrv[]) {
 
 	Sleep(2000);
 	CloseHandle(hPipe);
-
+	//----------------------------------------------------------------------------------------------------------------------------
 
 
 	WaitForSingleObject(produtorData.handleThread, INFINITE);
