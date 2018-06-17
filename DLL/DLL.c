@@ -58,6 +58,12 @@ PTBDONMEMORY initComunicacaoGatewaySide(PTHFBUFFER param) {
 	return temp;
 }
 
+void closeMemoriaPartilhadaJogo(PTGAMEDATAMS param) {
+	UnmapViewOfFile(param->gameData);
+	CloseHandle(param->handle);
+	CloseHandle(param->mutex);
+}
+
 void CloseComunicacao(PTPCS data) {
 	UnmapViewOfFile(data->bufferMemory);
 	CloseHandle(data->handleThread);

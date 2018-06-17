@@ -3,7 +3,6 @@
 DWORD WINAPI threadConsumidora(LPVOID param);
 void printError(unsigned short * msg);
 PTGAMEDATA initMemoriaPartilhadaJogo(PTGAMEDATAMS param);
-void closeMemoriaPartilhadaJogo(PTGAMEDATAMS param);
 
 int _tmain(int argc, LPTSTR agrv[]) {
 #ifdef UNICODE
@@ -48,6 +47,7 @@ int _tmain(int argc, LPTSTR agrv[]) {
 
 	CloseComunicacao(&consumidorData);
 	closeMemoriaPartilhadaJogo(&gameDataMemory);
+
 	return 0;
 }
 
@@ -89,10 +89,4 @@ PTGAMEDATA initMemoriaPartilhadaJogo(PTGAMEDATAMS param) {
 	}
 
 	return (PTGAMEDATA)MapViewOfFile(param->handle, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
-}
-
-void closeMemoriaPartilhadaJogo(PTGAMEDATAMS param) {
-	UnmapViewOfFile(param->gameData);
-	CloseHandle(param->handle);
-	CloseHandle(param->mutex);
 }
