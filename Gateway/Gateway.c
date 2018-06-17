@@ -1,7 +1,7 @@
 #include "..\DLL\DLL.h"
 
 DWORD WINAPI threadProdutora(LPVOID param);
-void printError(short * msg);
+void printError(unsigned short * msg);
 
 int _tmain(int argc, LPTSTR agrv[]) {
 #ifdef UNICODE
@@ -32,13 +32,12 @@ int _tmain(int argc, LPTSTR agrv[]) {
 
 DWORD WINAPI threadProdutora(LPVOID param) {
 	PTPCS data = (PTPCS)param;
-	int o = 0;
 	while (1) {
 		WaitForSingleObject(data->handlesBuffer.semRead, INFINITE);
 		WaitForSingleObject(data->handlesBuffer.mHandleBuffer, INFINITE);
 
-		data->bufferMemory->buffer[data->bufferMemory->nextIn] = ++o;
-		_tprintf(TEXT("Mandei[%d] na pos[%d]\n"), data->bufferMemory->buffer[data->bufferMemory->nextIn], data->bufferMemory->nextIn);
+		wscanf_s(TEXT("%d"), &data->bufferMemory->buffer[data->bufferMemory->nextIn]);
+		//_tprintf(TEXT("Mandei[%d] na pos[%d]\n"), data->bufferMemory->buffer[data->bufferMemory->nextIn], data->bufferMemory->nextIn);
 
 		if (data->bufferMemory->nextIn == BUFFER_SIZE - 1) {
 			data->bufferMemory->nextIn = 0;
@@ -56,6 +55,6 @@ DWORD WINAPI threadProdutora(LPVOID param) {
 	return 0;
 }
 
-void printError(short * msg) {
+void printError(unsigned short * msg) {
 	_tprintf(TEXT("[Gateway]Error> '%s'\n"), msg);
 }

@@ -33,7 +33,7 @@ PTBDONMEMORY initComunicacaoServerSide(PTHFBUFFER param) {
 	temp = (PTBDONMEMORY)MapViewOfFile(param->memoryBufferHandle, FILE_MAP_WRITE, 0, 0, sizeof(BDONMEMORY));
 	if (temp != NULL) {
 		temp->nextIn = 0;
-		temp->nextOut = BUFFER_SIZE - 1;
+		temp->nextOut = 0; //BUFFER_SIZE - 1
 	}
 
 	return temp;
