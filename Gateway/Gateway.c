@@ -1,22 +1,20 @@
 #include "..\DLL\DLL.h"
 #include <sys/types.h>
+
 #define PIPE_NAME TEXT("\\\\.\\pipe\\teste")
+
 HANDLE hTabela[10], hPipe;
-TCHAR buf[256];
 int flagThread = 1;
 
 DWORD WINAPI threadProdutora(LPVOID param);
 void printError(unsigned short * msg);
 PTGAMEDATA initMemoriaPartilhadaJogo(PTGAMEDATAMS param);
+DWORD WINAPI controlaPipes(LPVOID param);
+
 DWORD WINAPI trataCliente(LPVOID param);
 DWORD WINAPI RecebeCliente(LPVOID param);
 
 int _tmain(int argc, LPTSTR agrv[]) {
-	DWORD n, *tUm = NULL;
-	int i;
-	HANDLE thread;
-	OVERLAPPED Ov;
-	HANDLE hCano;
 #ifdef UNICODE
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
@@ -24,6 +22,7 @@ int _tmain(int argc, LPTSTR agrv[]) {
 #endif // UNICODE
 	GAMEDATAMS gameDataMemory;
 	PCS produtorData;
+	HANDLE hPipesMain;
 
 	//Criar memoria partilhada do jogo
 	gameDataMemory.gameData = initMemoriaPartilhadaJogo(&gameDataMemory);
@@ -44,66 +43,14 @@ int _tmain(int argc, LPTSTR agrv[]) {
 		return 1;
 	}
 
-
-
-	/*--------------------------------------------------------ligação client gateway-------------------------------*/
-
-	for (int i = 0; i < 10; i++)
-		hTabela[i] = INVALID_HANDLE_VALUE;
-
-	thread = CreateThread(NULL, 0, RecebeCliente, NULL, 0, tUm);
-	//PeekBuffer = CreateThread(NULL, 0, OlhaBuffer, /*PARAMETROS*/NULL, 0, PeekBufferID);
-	_tprintf(TEXT("[ESCRITOR] Criar uma cópia do pipe '%s' ... (CreateNamedPipe)\n"), PIPE_NAME);
-	HANDLE IOReady;
-
-	IOReady = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-
-
-	do {
-		_tprintf(TEXT("[ESCRITOR] Frase: "));
-		_fgetts(buf, 256, stdin);
-		buf[_tcslen(buf) - 1] = '\0';
-		for (int i = 0; i < 10; i++) {
-			if (hTabela[i] != INVALID_HANDLE_VALUE) {
-				ZeroMemory(&Ov, sizeof(Ov));
-				ResetEvent(IOReady);
-				Ov.hEvent = IOReady;
-
-				WriteFile(hTabela[i], buf, _tcslen(buf) * sizeof(TCHAR), &n, &Ov);
-
-				WaitForSingleObject(IOReady, INFINITE);
-				BOOL ret = GetOverlappedResult(hPipe, &Ov, &n, NULL);
-				if (!ret) {
-					_tprintf(TEXT("[ERRO] Escrever no pipe! (WriteFile)\n"));
-					exit(-1);
-				}
-				_tprintf(TEXT("[ESCRITOR] Enviei %d bytes: '%s' (WriteFile)\n"), n, buf);
-			}
-
-		}
-
-	} while (_tcscmp(buf, TEXT("fim")));
-	_tprintf(TEXT("[ESCRITOR] Desligar o pipe (DisconnectNamedPipe)\n"));
-	flagThread = 0;
-	hCano = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, PIPE_WAIT | PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, PIPE_UNLIMITED_INSTANCES, 10 * sizeof(TCHAR), 10 * sizeof(TCHAR), 1000, NULL);
-	WaitForSingleObject(thread, INFINITE);
-	for (int i = 0; i < 10; i++) {
-		if (hTabela[i] != INVALID_HANDLE_VALUE) {
-			if (!DisconnectNamedPipe(hTabela[i])) {
-				_tprintf(TEXT("[ERRO] Desligar o pipe! (DisconnectNamedPipe)"));
-				exit(-1);
-			}
-		}
+	hPipesMain = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)controlaPipes, NULL, 0, NULL);
+	if (hPipesMain == NULL) {
+		printError(TEXT("hPipesMain = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)threadProdutora, NULL, 0, NULL);"));
+		return 1;
 	}
 
-
-	Sleep(2000);
-	CloseHandle(hPipe);
-	//----------------------------------------------------------------------------------------------------------------------------
-
-
 	WaitForSingleObject(produtorData.handleThread, INFINITE);
+	WaitForSingleObject(hPipesMain, INFINITE);
 
 	CloseComunicacao(&produtorData);
 	closeMemoriaPartilhadaJogo(&gameDataMemory);
@@ -113,23 +60,25 @@ int _tmain(int argc, LPTSTR agrv[]) {
 
 DWORD WINAPI threadProdutora(LPVOID param) {
 	PTPCS data = (PTPCS)param;
+	int o = 0;
 	while (1) {
 		WaitForSingleObject(data->handlesBuffer.semRead, INFINITE);
 		WaitForSingleObject(data->handlesBuffer.mHandleBuffer, INFINITE);
 
-		_tprintf(TEXT("[Gateway]> "));
-		wscanf_s(TEXT("%d"), &data->bufferMemory->buffer[data->bufferMemory->nextIn]);
-
+		//_tprintf(TEXT("[Gateway]> "));
+		//wscanf_s(TEXT("%d"), &data->bufferMemory->buffer[data->bufferMemory->nextIn]);
+		data->bufferMemory->buffer[data->bufferMemory->nextIn] = ++o;
 		if (data->bufferMemory->nextIn == BUFFER_SIZE - 1) {
 			data->bufferMemory->nextIn = 0;
-		}else {
+		}
+		else {
 			data->bufferMemory->nextIn++;
 		}
 
 		ReleaseMutex(data->handlesBuffer.mHandleBuffer);
 		ReleaseSemaphore(data->handlesBuffer.semWrite, 1, NULL);
 
-		Sleep(500);
+		Sleep(1000);
 
 	}
 	return 0;
@@ -155,9 +104,61 @@ PTGAMEDATA initMemoriaPartilhadaJogo(PTGAMEDATAMS param) {
 	return (PTGAMEDATA)MapViewOfFile(param->handle, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
 }
 
+DWORD WINAPI controlaPipes(LPVOID param) {
+	DWORD sizeTransferred;
+	HANDLE tRecebeCliente, hCano, IOReady;
+	OVERLAPPED overlapped;
+	int o = 0;
 
-/*----------------------------comunicação client gateway----------------------------*/
+	for (int i = 0; i < 10; i++) {
+		hTabela[i] = INVALID_HANDLE_VALUE;
+	}
 
+	tRecebeCliente = CreateThread(NULL, 0, RecebeCliente, NULL, 0, NULL);
+	_tprintf(TEXT("[ESCRITOR] Criar uma cópia do pipe '%s' ... (CreateNamedPipe)\n"), PIPE_NAME);
+
+	IOReady = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+	do {
+		for (int i = 0; i < 10; i++) {
+			if (hTabela[i] != INVALID_HANDLE_VALUE) {
+				ZeroMemory(&overlapped, sizeof(overlapped));
+				ResetEvent(IOReady);
+				overlapped.hEvent = IOReady;
+
+				WriteFile(hTabela[i], (LPCVOID)&o, sizeof(int), &sizeTransferred, &overlapped);
+
+				WaitForSingleObject(IOReady, INFINITE);
+				if (!GetOverlappedResult(hPipe, &overlapped, &sizeTransferred, TRUE)) {
+					_tprintf(TEXT("[ERRO] Escrever no pipe! (WriteFile)\n"));
+					return 1;
+				}
+				_tprintf(TEXT("[ESCRITOR] Enviei %d bytes: '%d' (WriteFile)\n"), sizeTransferred, o);
+			}
+
+		}
+		o++;
+	} while (o < 60);
+
+	_tprintf(TEXT("[ESCRITOR] Desligar o pipe (DisconnectNamedPipe)\n"));
+	flagThread = 0;
+	hCano = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, PIPE_WAIT | PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, PIPE_UNLIMITED_INSTANCES, 10 * sizeof(TCHAR), 10 * sizeof(TCHAR), 1000, NULL);
+	WaitForSingleObject(tRecebeCliente, INFINITE);
+	
+	for (int i = 0; i < 10; i++) {
+		if (hTabela[i] != INVALID_HANDLE_VALUE) {
+			if (!DisconnectNamedPipe(hTabela[i])) {
+				_tprintf(TEXT("[ERRO] Desligar o pipe! (DisconnectNamedPipe)"));
+				return 1;
+			}
+		}
+	}
+
+
+	Sleep(1000);
+	CloseHandle(hPipe);
+	return 0;
+}
 
 DWORD WINAPI RecebeCliente(LPVOID param) {
 	int i = 0;
@@ -184,9 +185,6 @@ DWORD WINAPI RecebeCliente(LPVOID param) {
 	return 0;
 }
 
-
-
-
 DWORD WINAPI trataCliente(LPVOID param) {
 	HANDLE pipezao = (HANDLE)param;
 	DWORD n = 0;
@@ -206,7 +204,7 @@ DWORD WINAPI trataCliente(LPVOID param) {
 
 		//bufzao[n / sizeof(TCHAR)] = '\0';
 		WaitForSingleObject(IOReady, INFINITE);
-		ret = GetOverlappedResult(pipezao, &Ov, &n, NULL);
+		ret = GetOverlappedResult(pipezao, &Ov, &n, TRUE);
 		if (!ret || !n) {
 			_tprintf(TEXT("ESCRITOR] %d %d... (ReadFile)\n"), ret, n);
 			break;
