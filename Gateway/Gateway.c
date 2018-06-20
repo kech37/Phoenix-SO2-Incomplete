@@ -172,9 +172,11 @@ DWORD WINAPI trataCliente(LPVOID param) {
 	HANDLE pipezao = (HANDLE)param;
 	DWORD n = 0;
 	BOOL ret;
-	TCHAR bufzao[256];
+	//TCHAR bufzao[256];
 	OVERLAPPED Ov;
 	HANDLE IOReady;
+	int leitura;
+
 	IOReady = CreateEvent(NULL, TRUE, FALSE, NULL);
 	_tprintf(TEXT("\n \nThread Lançada!"));
 	while (1) {
@@ -183,8 +185,8 @@ DWORD WINAPI trataCliente(LPVOID param) {
 		Ov.hEvent = IOReady;
 
 
-		ReadFile(pipezao, bufzao, sizeof(bufzao), &n, &Ov);
-
+		ReadFile(pipezao, &leitura, sizeof(int), &n, &Ov);
+		produzItem(&produtorData, leitura);
 		//bufzao[n / sizeof(TCHAR)] = '\0';
 		WaitForSingleObject(IOReady, INFINITE);
 		ret = GetOverlappedResult(pipezao, &Ov, &n, TRUE);
@@ -192,8 +194,8 @@ DWORD WINAPI trataCliente(LPVOID param) {
 			_tprintf(TEXT("ESCRITOR] %d %d... (ReadFile)\n"), ret, n);
 			break;
 		}
-		bufzao[n / sizeof(TCHAR)] = '\0';
-		_tprintf(TEXT("[ESCRITOR] Recebi %d bytes: '%s' (ReadFile)\n"), n, bufzao);
+		//bufzao[n / sizeof(TCHAR)] = '\0';
+		_tprintf(TEXT("[ESCRITOR] Recebi %d bytes: '%d' (ReadFile)\n"), n, leitura);
 	}
 	return 0;
 }

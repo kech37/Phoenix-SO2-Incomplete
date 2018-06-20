@@ -9,7 +9,10 @@ DWORD WINAPI EnviaPedidos(LPVOID param) {
 	int i = 0;
 	DWORD n = 0;
 	HANDLE hPipe = (HANDLE)param;
-	TCHAR buf[256];
+	//TCHAR buf[256];
+
+	int escrita;
+
 	HANDLE IOReady;
 	OVERLAPPED Ov;
 
@@ -17,8 +20,9 @@ DWORD WINAPI EnviaPedidos(LPVOID param) {
 	IOReady = CreateEvent(NULL, TRUE, FALSE, NULL);
 	do {
 		_tprintf(TEXT("[LEITOR] Pedido: "));
-		_fgetts(buf, 256, stdin);
-		buf[_tcslen(buf) - 1] = '\0';
+		_tscanf_s(TEXT("%d"), &escrita);
+		//_fgetts(&escrita, sizeof(int), stdin);
+		//buf[_tcslen(buf) - 1] = '\0';
 
 
 
@@ -27,7 +31,7 @@ DWORD WINAPI EnviaPedidos(LPVOID param) {
 		ResetEvent(IOReady);
 		Ov.hEvent = IOReady;
 
-		WriteFile(hPipe, buf, (DWORD) _tcslen(buf) * sizeof(TCHAR), &n, &Ov);
+		WriteFile(hPipe, &escrita, sizeof(int), &n, &Ov);
 
 		WaitForSingleObject(IOReady, INFINITE);
 		if (!GetOverlappedResult(hPipe, &Ov, &n, TRUE)) {
@@ -35,8 +39,8 @@ DWORD WINAPI EnviaPedidos(LPVOID param) {
 			exit(-1);
 		}
 
-		_tprintf(TEXT("[LEITOR] Enviei %d bytes: '%s' (WriteFile)\n"), n, buf);
-	} while (_tcscmp(buf, TEXT("fim")));
+		_tprintf(TEXT("[LEITOR] Enviei %d bytes: '%d' (WriteFile)\n"), n, escrita);
+	} while (escrita < 100);
 
 	return 0;
 }
@@ -78,7 +82,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 		ResetEvent(IOReady);
 		Ov.hEvent = IOReady;
 
-		ReadFile(hPipe, (LPCVOID)&o, (DWORD) sizeof(int), (LPDWORD)&n, (LPOVERLAPPED)&Ov);
+		ReadFile(hPipe, &o, sizeof(int), &n, &Ov);
 		WaitForSingleObject(IOReady, INFINITE);
 
 		ret = GetOverlappedResult(hPipe, &Ov, &n, TRUE);
