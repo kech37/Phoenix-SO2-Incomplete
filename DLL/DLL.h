@@ -4,6 +4,7 @@
 #include <io.h>
 #include <stdlib.h> 
 #include <fcntl.h>
+#include <sys/types.h>
 
 #define BUFFER_SIZE 32
 
@@ -23,6 +24,9 @@
 #define ACCESS_GAME_MEMORY_NAME TEXT("nomeMemoriaPartilhadaDeJogo")
 
 #define BUFFER_SHAREDMEMORY_NAME TEXT("memoriaPartilhadaNomeParaBuffer")
+
+
+#define PIPE_NAME TEXT("\\\\.\\pipe\\comunicaçãoCLientesGateway")
 
 #ifdef DLL_EXPORTS 
 #define DLL __declspec(dllexport)
@@ -85,7 +89,7 @@ typedef enum _tecla {
 
 typedef struct _playInfo {
 	TECLA jogada;
-	unsigned short pontos;
+	unsigned short id;
 	TCHAR nome[PLAYER_NAME_SIZE];
 } PLAYERINFO, PTPLAYERINFO;
 
@@ -95,6 +99,7 @@ typedef struct _defendorSpaceship {
 	PTPOWERUP powerup;
 	unsigned short vidas;
 	PTPLAYERINFO jogador;
+	unsigned short pontos;
 	unsigned short velocidade;
 }DEFENDORSPACESHIP, * PTDEFENDORSPACESHIP;
 
@@ -115,7 +120,8 @@ typedef struct _bombs {
 typedef enum _state {
 	A_JOGAR,
 	PREJOGO,
-	POSJOGO
+	POSJOGO,
+	TERMINADO
 } STATE;
 
 typedef struct _gameData {
@@ -160,7 +166,7 @@ typedef struct _handlesForBuffer {
 typedef struct _bufferDataOnMemory {
 	short nextIn;
 	short nextOut;
-	int buffer[BUFFER_SIZE];
+	PLAYERINFO buffer[BUFFER_SIZE];
 } BDONMEMORY, *PTBDONMEMORY;
 
 typedef struct _produtorConsumidorStruct {
@@ -178,8 +184,8 @@ extern "C" {
 	DLL PTBDONMEMORY initComunicacaoGatewaySide(PTHFBUFFER param);
 	DLL void CloseComunicacao(PTPCS data);
 	DLL void closeMemoriaPartilhadaJogo(PTGAMEDATAMS param);
-	DLL void produzItem(PTPCS data, unsigned short num);
-	DLL int consumeItem(PTPCS data);
+	DLL void produzItem(PTPCS data, PLAYERINFO jogada);
+	DLL PLAYERINFO consumeItem(PTPCS data);
 #ifdef __cplusplus
 }
 #endif

@@ -73,11 +73,11 @@ void CloseComunicacao(PTPCS data) {
 	CloseHandle(data->handlesBuffer.semWrite);
 }
 
-void produzItem(PTPCS data, unsigned short num) {
+void produzItem(PTPCS data, PLAYERINFO jogada) {
 	WaitForSingleObject(data->handlesBuffer.semRead, INFINITE);
 	WaitForSingleObject(data->handlesBuffer.mHandleBuffer, INFINITE);
 
-	data->bufferMemory->buffer[data->bufferMemory->nextIn] = num;
+	data->bufferMemory->buffer[data->bufferMemory->nextIn] = jogada;
 	if (data->bufferMemory->nextIn == BUFFER_SIZE - 1) {
 		data->bufferMemory->nextIn = 0;
 	}
@@ -89,8 +89,8 @@ void produzItem(PTPCS data, unsigned short num) {
 	ReleaseSemaphore(data->handlesBuffer.semWrite, 1, NULL);
 }
 
-int consumeItem(PTPCS data) {
-	int temp;
+PLAYERINFO consumeItem(PTPCS data) {
+	PLAYERINFO temp;
 
 	WaitForSingleObject(data->handlesBuffer.semWrite, INFINITE);
 	WaitForSingleObject(data->handlesBuffer.mHandleBuffer, INFINITE);

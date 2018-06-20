@@ -23,9 +23,12 @@ int _tmain(int argc, LPTSTR agrv[]) {
 	//Iniciar memoria partilhada do jogo
 	gameDataMemory.gameData->estado = PREJOGO;
 	gameDataMemory.gameData->powerupsCount = 0;
-	gameDataMemory.gameData->inimigosCount = 0;
+	gameDataMemory.gameData->inimigosCount = 2;
 	gameDataMemory.gameData->defensoresCount = 0;
 	gameDataMemory.gameData->bombasCount = 0;
+	for (int i = 0; i < MAX_PLAYERS_SIZE; i++) {
+		gameDataMemory.gameData->defensores[i].jogador.id = 0;
+	}
 
 	//Iniciar tudo para o produtor consumidor
 	consumidorData.bufferMemory = initComunicacaoServerSide(&consumidorData.handlesBuffer);
@@ -52,9 +55,34 @@ int _tmain(int argc, LPTSTR agrv[]) {
 }
 
 DWORD WINAPI threadConsumidora(LPVOID param) {
+	PLAYERINFO jogador;
 	while (1) {
-		gameDataMemory.gameData->bombasCount = consumeItem(&consumidorData);
-		_tprintf(TEXT("Consumi: %d\n"), gameDataMemory.gameData->bombasCount);
+		jogador = consumeItem(&consumidorData);
+		WaitForSingleObject(gameDataMemory.mutex, INFINITE);
+		for (int i = 0; i < gameDataMemory.gameData->defensoresCount; i++) {
+			if (gameDataMemory.gameData->defensores[i].jogador.id == jogador.id) {
+				switch (jogador.jogada){
+				case CIMA:
+					_tprintf(TEXT("Consumi: CIMA\n"));
+					break;
+				case BAIXO:
+					_tprintf(TEXT("Consumi: BAIXO\n"));
+					break;
+				case ESQUERDA:
+					break;
+				case DIREITA:
+					break;
+				case ESPAÇO:
+					break;
+				case OUTRA_TECLA:
+					break;
+				case NULA:
+				default:
+					break;
+				}
+			}
+		}
+		ReleaseMutex(gameDataMemory.mutex);
 	}
 	return 0;
 }
