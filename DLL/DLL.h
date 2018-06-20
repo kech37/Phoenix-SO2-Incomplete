@@ -178,6 +178,8 @@ extern "C" {
 	DLL PTBDONMEMORY initComunicacaoGatewaySide(PTHFBUFFER param);
 	DLL void CloseComunicacao(PTPCS data);
 	DLL void closeMemoriaPartilhadaJogo(PTGAMEDATAMS param);
+	DLL void produzItem(PTPCS data, unsigned short num);
+	DLL int consumeItem(PTPCS data);
 #ifdef __cplusplus
 }
 #endif

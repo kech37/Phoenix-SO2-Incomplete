@@ -72,3 +72,40 @@ void CloseComunicacao(PTPCS data) {
 	CloseHandle(data->handlesBuffer.semRead);
 	CloseHandle(data->handlesBuffer.semWrite);
 }
+
+void produzItem(PTPCS data, unsigned short num) {
+	WaitForSingleObject(data->handlesBuffer.semRead, INFINITE);
+	WaitForSingleObject(data->handlesBuffer.mHandleBuffer, INFINITE);
+
+	data->bufferMemory->buffer[data->bufferMemory->nextIn] = num;
+	if (data->bufferMemory->nextIn == BUFFER_SIZE - 1) {
+		data->bufferMemory->nextIn = 0;
+	}
+	else {
+		data->bufferMemory->nextIn++;
+	}
+
+	ReleaseMutex(data->handlesBuffer.mHandleBuffer);
+	ReleaseSemaphore(data->handlesBuffer.semWrite, 1, NULL);
+}
+
+int consumeItem(PTPCS data) {
+	int temp;
+
+	WaitForSingleObject(data->handlesBuffer.semWrite, INFINITE);
+	WaitForSingleObject(data->handlesBuffer.mHandleBuffer, INFINITE);
+
+	//_tprintf(TEXT("Recebi [%d]\n"), data->bufferMemory->buffer[data->bufferMemory->nextOut]);
+	temp = data->bufferMemory->buffer[data->bufferMemory->nextOut];
+	if (data->bufferMemory->nextOut == BUFFER_SIZE - 1) {
+		data->bufferMemory->nextOut = 0;
+	}
+	else {
+		data->bufferMemory->nextOut++;
+	}
+
+	ReleaseMutex(data->handlesBuffer.mHandleBuffer);
+	ReleaseSemaphore(data->handlesBuffer.semRead, 1, NULL);
+
+	return temp;
+}

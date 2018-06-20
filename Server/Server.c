@@ -4,15 +4,15 @@ DWORD WINAPI threadConsumidora(LPVOID param);
 void printError(unsigned short * msg);
 PTGAMEDATA initMemoriaPartilhadaJogo(PTGAMEDATAMS param);
 
+GAMEDATAMS gameDataMemory;
+PCS consumidorData;
+
 int _tmain(int argc, LPTSTR agrv[]) {
 #ifdef UNICODE
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif // UNICODE
-	GAMEDATAMS gameDataMemory;
-	PCS consumidorData;
-
 	//Criar memoria partilhada do jogo
 	gameDataMemory.gameData = initMemoriaPartilhadaJogo(&gameDataMemory);
 	if (gameDataMemory.gameData == NULL) {
@@ -52,21 +52,9 @@ int _tmain(int argc, LPTSTR agrv[]) {
 }
 
 DWORD WINAPI threadConsumidora(LPVOID param) {
-	PTPCS data = (PTPCS)param;
-
 	while (1) {
-		WaitForSingleObject(data->handlesBuffer.semWrite, INFINITE);
-		WaitForSingleObject(data->handlesBuffer.mHandleBuffer, INFINITE);
-
-		_tprintf(TEXT("Recebi [%d]\n"), data->bufferMemory->buffer[data->bufferMemory->nextOut]);
-		if (data->bufferMemory->nextOut == BUFFER_SIZE - 1) {
-			data->bufferMemory->nextOut = 0;
-		}else {
-			data->bufferMemory->nextOut++;
-		}
-
-		ReleaseMutex(data->handlesBuffer.mHandleBuffer);
-		ReleaseSemaphore(data->handlesBuffer.semRead, 1, NULL);
+		gameDataMemory.gameData->bombasCount = consumeItem(&consumidorData);
+		_tprintf(TEXT("Consumi: %d\n"), gameDataMemory.gameData->bombasCount);
 	}
 	return 0;
 }

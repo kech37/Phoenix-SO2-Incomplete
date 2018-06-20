@@ -40,6 +40,7 @@ DWORD WINAPI EnviaPedidos(LPVOID param) {
 
 	return 0;
 }
+
 int _tmain(int argc, LPTSTR argv[]) {
 //	TCHAR buf[256];
 	int o = 0;
