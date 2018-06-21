@@ -15,27 +15,23 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
 #endif	
-	/*HANDLE hPipe, IOReady;
+	HANDLE hPipe, IOReady;
 	OVERLAPPED Overlapped;
 	DWORD sizeTransferred, modo;
 	HANDLE thread;
-
 	if (!WaitNamedPipe(PIPE_NAME, NMPWAIT_WAIT_FOREVER)) {
 		printError(TEXT("18: !WaitNamedPipe(PIPE_NAME, NMPWAIT_WAIT_FOREVER)"));
 		return 1;
 	}
-
 	hPipe = CreateFile(PIPE_NAME, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0 | FILE_FLAG_OVERLAPPED, NULL);
 	if (hPipe == NULL) {
 		printError(TEXT("24: (hPipe == NULL"));
 		return 1;
 	}
-
 	//ALTERAR MODO LEITURA DO PIPE PARA "MESSAGE"...
 	modo = PIPE_READMODE_MESSAGE;
 	SetNamedPipeHandleState(hPipe, &modo, NULL, NULL);
 	IOReady = CreateEvent(NULL, TRUE, FALSE, NULL);
-
 	thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EnviaPedidos, (LPVOID)hPipe, 0, NULL);
 
 	while (continua) {
@@ -50,43 +46,39 @@ int _tmain(int argc, LPTSTR argv[]) {
 			printError(TEXT("42: !GetOverlappedResult(hPipe, &overlapped, &sizeTransferred, TRUE)"));
 			return 1;
 			break;
-		}*/
+		}
 		/**********************************************/
 		/* Recebeu e deverá imprimir o estado de jogo */
 		/**********************************************/
-		/*switch (estadoJogo.estado){
-			case PREJOGO:
-				if (firstTime) {
-					for (int i = 0; i < MAX_PLAYERS_SIZE; i++) {
-						if (estadoJogo.defensores[i].jogador.id == 0) {
-							estadoJogo.defensores[i].jogador.id = (i + 1);
-							aEnviar.id = (i + 1);
-							break;
-						}
+		switch (estadoJogo.estado) {
+		case PREJOGO:
+			if (firstTime) {
+				for (int i = 0; i < MAX_PLAYERS_SIZE; i++) {
+					if (estadoJogo.defensores[i].jogador.id == 0) {
+						estadoJogo.defensores[i].jogador.id = (i + 1);
+						aEnviar.id = (i + 1);
+						break;
 					}
-					_tprintf_s(TEXT("Nome de jogador: "));
-					wscanf_s(TEXT("%s"), &aEnviar.nome, PLAYER_NAME_SIZE);
-					firstTime = FALSE;
 				}
+				_tprintf_s(TEXT("Nome de jogador: "));
+				wscanf_s(TEXT("%s"), &aEnviar.nome, PLAYER_NAME_SIZE);
+				firstTime = FALSE;
+			}
 			break;
-			case A_JOGAR:
-
+		case A_JOGAR:
 			break;
-			case POSJOGO:
-
+		case POSJOGO:
 			break;
-			case TERMINADO:
-				continua = FALSE;
+		case TERMINADO:
+			continua = FALSE;
 			break;
-			default:
+		default:
 			break;
 		}
 	}
-
 	WaitForSingleObject(thread, INFINITE);
-
 	CloseHandle(thread);
-	CloseHandle(hPipe);*/
+	CloseHandle(hPipe);
 
 
 

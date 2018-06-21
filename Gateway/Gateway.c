@@ -90,10 +90,10 @@ DWORD WINAPI controlaPipes(LPVOID param) {
 	IOReady = CreateEvent(NULL, TRUE, FALSE, NULL);
 
 	do {
-		switch (gameDataMemory.gameData->estado){
+		switch (gameDataMemory.gameData->estado) {
 		case PREJOGO:
-			_tprintf(TEXT("PREJOGO\n"));
-			break;
+			/*_tprintf(TEXT("PREJOGO\n"));
+			break;*/
 		case A_JOGAR:
 			/********************************************/
 			/* Envia estado de jogo a todos os clientes */
@@ -118,16 +118,16 @@ DWORD WINAPI controlaPipes(LPVOID param) {
 				}
 			}
 			ReleaseMutex(gameDataMemory.mutex);
-		break;
+			break;
 		case POSJOGO:
 			printLog(TEXT("POSJOGO"));
-		break;
+			break;
 		case TERMINADO:
 			segue = FALSE;
-		break;
+			break;
 		default:
 			printError(TEXT("switch (gameDataMemory.gameData->estado)"));
-		break;
+			break;
 		}
 		Sleep(1000);
 	} while (segue);
@@ -137,7 +137,7 @@ DWORD WINAPI controlaPipes(LPVOID param) {
 
 	hCano = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, PIPE_WAIT | PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, PIPE_UNLIMITED_INSTANCES, 10 * sizeof(TCHAR), 10 * sizeof(TCHAR), 1000, NULL);
 	WaitForSingleObject(tRecebeCliente, INFINITE);
-	
+
 	for (int i = 0; i < MAX_PLAYERS_SIZE; i++) {
 		if (hClientes[i] != INVALID_HANDLE_VALUE) {
 			if (!DisconnectNamedPipe(hClientes[i])) {
@@ -156,7 +156,7 @@ DWORD WINAPI RecebeCliente(LPVOID param) {
 	while (flagThread) {
 		i = 0;
 		hPipe = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, PIPE_WAIT | PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, PIPE_UNLIMITED_INSTANCES, 10 * sizeof(TCHAR), 10 * sizeof(TCHAR), 1000, NULL);
-		
+
 		if (hPipe == INVALID_HANDLE_VALUE) {
 			printError(TEXT("Criar Named Pipe! (CreateNamedPipe)"));
 			return 1;
@@ -191,7 +191,7 @@ DWORD WINAPI trataCliente(LPVOID param) {
 		/****************************************************/
 		/* Recebe jogada do cliente e envia para o servidor */
 		/****************************************************/
-		ReadFile((HANDLE) param, &itemLido, sizeof(PLAYERINFO), &sizeTransferred, &Overlapped);
+		ReadFile((HANDLE)param, &itemLido, sizeof(PLAYERINFO), &sizeTransferred, &Overlapped);
 		produzItem(&produtorData, itemLido);
 		_tprintf_s(TEXT("[Gateway]Log> Produzi item do jogado '%s'.\n"), itemLido.nome);
 
@@ -205,4 +205,3 @@ DWORD WINAPI trataCliente(LPVOID param) {
 	}
 	return 0;
 }
-

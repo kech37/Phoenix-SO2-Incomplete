@@ -61,7 +61,7 @@ DWORD WINAPI threadConsumidora(LPVOID param) {
 		WaitForSingleObject(gameDataMemory.mutex, INFINITE);
 		for (int i = 0; i < gameDataMemory.gameData->defensoresCount; i++) {
 			if (gameDataMemory.gameData->defensores[i].jogador.id == jogador.id) {
-				switch (jogador.jogada){
+				switch (jogador.jogada) {
 				case CIMA:
 					_tprintf(TEXT("Consumi: CIMA\n"));
 					break;

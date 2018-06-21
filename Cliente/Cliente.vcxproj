@@ -20,9 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{ED5EB594-FE97-4868-BA50-05F5FE4C52AB}</ProjectGuid>
+    <ProjectGuid>{A6DE6624-613E-48F0-B93F-475ED63627E9}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>teste</RootNamespace>
+    <RootNamespace>Cliente</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -147,27 +147,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Cliente.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="teste.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Cliente.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="teste.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="teste.rc" />
+    <ResourceCompile Include="Cliente.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="nave.bmp" />
+    <Image Include="bitmap1.bmp" />
+    <Image Include="Cliente.ico" />
     <Image Include="small.ico" />
-    <Image Include="teste.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
